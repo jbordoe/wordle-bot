@@ -11,20 +11,42 @@ class PlayerInterface:
 
 class HumanPlayer(PlayerInterface):
     def guess(self, game_state) -> str:
-        wordlist = game_state['wordlist']
-        length = game_state['word_length']
         while True:
             print("""
         Enter your guess! Must be a {}-letter word
-    """.format(length))
+    """.format(game_state.word_length))
             guess = input().strip().upper()
-            if not guess in wordlist:
+            if not guess in game_state.wordlist:
                 print("Your guess is not valid")
             else:
                 return guess
 
+class GameState:
+    def __init__(self, wordlist, wordlen=5):
+        self.wordlist = wordlist
+        self.word_length = wordlen
+        self.known = ["_" for _ in range(wordlen)]
+        self.found = set()
+        self.answer = random.sample(wordlist, 1)[0].upper()
+        self.guesses = 0
+
+    def update(self, guess):
+        known_new = [None for _ in range(self.word_length)]
+
+        for i in range(len(guess)):
+            gc = guess[i]
+            if gc == self.answer[i]:
+                known_new[i] = gc
+                self.found.discard(gc)
+
+            elif gc in self.answer:
+                self.found.add(gc)
+
+        self.known = known_new
+        self.guesses += 1
+
 def menu():
-    print("==== WORDLE ====")
+    print("==== Menu ====")
     while True:
         print("""
     1. New game
@@ -44,50 +66,29 @@ def menu():
 def game(wordlen=5):
     # TODO: save to a given location, only dl if not present
     all_words = requests.get(WORDLIST_URL).json().keys()
-
-    player = HumanPlayer()
     words = [w.upper() for w in all_words if len(w) == wordlen]
 
-    soln = random.sample(words,1)[0].upper()
+    player = HumanPlayer()
+    state = GameState(words, wordlen=wordlen)
 
-    guesses = 0
+    print(' '.join([c for c in state.known]))
 
-    # TODO: let's make this a class too
-    state = {
-        'wordlist': words,
-        'word_length': wordlen,
-        'known': ["_" for _ in range(wordlen)], # letters wi known position
-        'found': set()                          # letters in word, pos unknown
-    }
-
-    print(' '.join([c for c in state['known']]))
-#    print(soln)
     while True:
-        guesses += 1
-        print("_________ GUESS #{} _________".format(guesses))
+        print("_________ GUESS #{} _________".format(state.guesses + 1))
         guess = player.guess(state)
-        k2 = [None for _ in range(wordlen)]
-
         for i in range(len(guess)):
             gc = guess[i]
-            if gc == soln[i]:
-                k2[i] = gc
+            state.update(guess)
+            if gc == state.answer[i]:
                 cprint(gc, 'white', 'on_green', end='')
-                if gc in state['found']:
-                    state['found'].remove(gc)
-
-            elif gc in soln:
-                state['found'].add(gc)
+            elif gc in state.answer:
                 cprint(gc, 'white', 'on_yellow', end='')
             else:
                 print('_', end='')
-
-            state['known'] = k2
-        if guess == soln:
-            print("\nWELL DONE! {} guess(es)".format(guesses))
-            return guesses
+        if guess == state.answer:
+            print("\nWELL DONE! {} guess(es)".format(state.guesses))
+            return state.guesses
         print('')
 
-
-
+# TODO: add a cool figlet banner
 menu()
