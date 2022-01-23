@@ -52,15 +52,20 @@ def game(wordlen=5):
 
     guesses = 0
 
-    known = ["_" for _ in range(wordlen)]
-    found = set()
+    # TODO: let's make this a class too
+    state = {
+        'wordlist': words,
+        'word_length': wordlen,
+        'known': ["_" for _ in range(wordlen)], # letters wi known position
+        'found': set()                          # letters in word, pos unknown
+    }
 
-    print(' '.join([c for c in known]))
-    print(soln)
+    print(' '.join([c for c in state['known']]))
+#    print(soln)
     while True:
         guesses += 1
         print("_________ GUESS #{} _________".format(guesses))
-        guess = player.guess({'wordlist': words, 'word_length': wordlen})
+        guess = player.guess(state)
         k2 = [None for _ in range(wordlen)]
 
         for i in range(len(guess)):
@@ -68,16 +73,16 @@ def game(wordlen=5):
             if gc == soln[i]:
                 k2[i] = gc
                 cprint(gc, 'white', 'on_green', end='')
-                if gc in found:
-                    found.remove(gc)
+                if gc in state['found']:
+                    state['found'].remove(gc)
 
             elif gc in soln:
-                found.add(gc)
+                state['found'].add(gc)
                 cprint(gc, 'white', 'on_yellow', end='')
             else:
                 print('_', end='')
 
-            known = k2
+            state['known'] = k2
         if guess == soln:
             print("\nWELL DONE! {} guess(es)".format(guesses))
             return guesses
