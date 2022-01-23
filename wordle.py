@@ -5,6 +5,24 @@ from termcolor import cprint
 # TODO: find a better list without proper nouns
 WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
 
+class PlayerInterface:
+    def guess(self, game_state) -> str:
+        pass
+
+class HumanPlayer(PlayerInterface):
+    def guess(self, game_state) -> str:
+        wordlist = game_state['wordlist']
+        length = game_state['word_length']
+        while True:
+            print("""
+        Enter your guess! Must be a {}-letter word
+    """.format(length))
+            guess = input().strip().upper()
+            if not guess in wordlist:
+                print("Your guess is not valid")
+            else:
+                return guess
+
 def menu():
     print("==== WORDLE ====")
     while True:
@@ -22,21 +40,12 @@ def menu():
         else:
             print("Unrecognized input")
 
-def get_guess(wordlist, length=5):
-    while True:
-        print("""
-    Enter your guess! Must be a {}-letter word
-""".format(length))
-        guess = input().strip().upper()
-        if not guess in wordlist:
-            print("Your guess is not valid")
-        else:
-            return guess
 
 def game(wordlen=5):
     # TODO: save to a given location, only dl if not present
     all_words = requests.get(WORDLIST_URL).json().keys()
 
+    player = HumanPlayer()
     words = [w.upper() for w in all_words if len(w) == wordlen]
 
     soln = random.sample(words,1)[0].upper()
@@ -51,7 +60,7 @@ def game(wordlen=5):
     while True:
         guesses += 1
         print("_________ GUESS #{} _________".format(guesses))
-        guess = get_guess(words, length=wordlen)
+        guess = player.guess({'wordlist': words, 'word_length': wordlen})
         k2 = [None for _ in range(wordlen)]
 
         for i in range(len(guess)):
@@ -69,9 +78,9 @@ def game(wordlen=5):
                 print('_', end='')
 
             known = k2
-            if guess == soln:
-                print("WELL DONE! {} guess(es)".format(guesses))
-                return guesses
+        if guess == soln:
+            print("\nWELL DONE! {} guess(es)".format(guesses))
+            return guesses
         print('')
 
 
