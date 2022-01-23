@@ -6,6 +6,7 @@ name = "pypi"
 [packages]
 requests = "*"
 termcolor = "*"
+alive-progress = "*"
 
 [dev-packages]
 
