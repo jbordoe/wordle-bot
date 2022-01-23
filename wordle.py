@@ -6,11 +6,11 @@ from termcolor import cprint
 WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
 
 class PlayerInterface:
-    def guess(self, game_state) -> str:
+    def guess(self, game_state, prev=None) -> str:
         pass
 
 class HumanPlayer(PlayerInterface):
-    def guess(self, game_state) -> str:
+    def guess(self, game_state, prev=None) -> str:
         while True:
             print("""
 Enter your guess! Must be a {}-letter word
@@ -23,17 +23,20 @@ Enter your guess! Must be a {}-letter word
 
 class NaivePlayer(PlayerInterface):
     def __init__(self, game_state):
-        self.known = ['' for _ in range(game_state.word_length)]
-        self.found = set()
+        self.placed = ['' for _ in range(game_state.word_length)]
+        self.present = set()
         self.guessed = set()
+        self.excludes = [set() for _ in range(game_state.word_length)]
 
-    def guess(self, game_state) -> str:
-        found = self.found.union(game_state.found)
-        known = [e[0] or e[1] for e in zip(self.known, game_state.known)]
+    def guess(self, game_state, prev=None) -> str:
+        present = self.present.union(game_state.present)
+        placed = [e[0] or e[1] for e in zip(self.placed, game_state.placed)]
 
-        known_str = ''.join(known)
-        if len(known_str) == game_state.word_length:
-            return known_str
+        if prev: self._update_excludes(prev)
+
+        placed_str = ''.join(placed)
+        if len(placed_str) == game_state.word_length:
+            return placed_str
 
         candidates = []
         # TODO: all this linear scanning is inefficient
@@ -42,10 +45,10 @@ class NaivePlayer(PlayerInterface):
             invalid = False
             if w in self.guessed: continue
             for i in range(game_state.word_length):
-                if known[i] and (known[i] != w[i]):
-                    invalid = True
-                    break
-            if invalid or not set(w).issuperset(found): continue
+                if placed[i] and (placed[i] != w[i]): invalid = True
+                if w[i] in self.excludes[i]: invalid = True
+                if invalid: break
+            if invalid or not set(w).issuperset(present): continue
 
             candidates.append(w)
 
@@ -54,34 +57,57 @@ class NaivePlayer(PlayerInterface):
         else:
             guess = random.sample(candidates, 1)[0].upper()
             self.guessed.add(guess)
-            self.known = known
-            self.found = found
+            self.placed = placed
+            self.present = present
+            print("I guess {}".format(guess))
             return guess
 
+    def _update_excludes(self, result):
+        letters = result.letters
+        for i in range(len(letters)):
+            pair = letters[i]
+            if not pair: continue
+            l, l_state = pair
+            if l_state == GameState.LETTER_STATE_PRESENT:
+                self.excludes[i].add(l)
+
+class GameGuessResult:
+    def __init__(self, guess, letters=None):
+        self.guess = guess
+        self.letters = letters or [None for _ in range(len(guess))]
 
 class GameState:
+    LETTER_STATE_PRESENT = 0
+    LETTER_STATE_PLACED = 1
+
     def __init__(self, wordlist, wordlen=5):
         self.wordlist = wordlist
         self.word_length = wordlen
-        self.known = ['' for _ in range(wordlen)]
-        self.found = set()
+        self.placed = ['' for _ in range(wordlen)]
+        self.present = set()
         self.answer = random.sample(wordlist, 1)[0].upper()
         self.guesses = 0
 
     def update(self, guess):
-        known_new = ['' for _ in range(self.word_length)]
+        letters = [None for _ in range(len(guess))]
+        placed_new = ['' for _ in range(self.word_length)]
 
         for i in range(len(guess)):
             gc = guess[i]
             if gc == self.answer[i]:
-                known_new[i] = gc
-                self.found.discard(gc)
+                placed_new[i] = gc
+                self.present.discard(gc)
+                letters[i] = (gc, self.LETTER_STATE_PLACED) 
 
             elif gc in self.answer:
-                self.found.add(gc)
+                self.present.add(gc)
+                letters[i] = (gc, self.LETTER_STATE_PRESENT) 
 
-        self.known = known_new
+        self.placed = placed_new
         self.guesses += 1
+
+        res = GameGuessResult(guess, letters=letters)
+        return res
 
 def menu():
     print("==== Menu ====")
@@ -109,20 +135,22 @@ def game(wordlen=5):
     state = GameState(words, wordlen=wordlen)
 #    player = HumanPlayer()
     player = NaivePlayer(state)
-    print(' '.join([c or "_" for c in state.known]))
+    print(''.join([c or "_" for c in state.placed]))
 
+    result = None
     while True:
         print("========= GUESS #{} =========".format(state.guesses + 1))
-        guess = player.guess(state)
-        state.update(guess)
-        for i in range(len(guess)):
-            gc = guess[i]
-            if gc == state.answer[i]:
-                cprint(gc, 'white', 'on_green', end='')
-            elif gc in state.answer:
-                cprint(gc, 'white', 'on_yellow', end='')
+        guess = player.guess(state, prev=result)
+        result = state.update(guess)
+        for pair in result.letters:
+            letter, letter_state = pair if pair else (None, None)
+            if letter_state == GameState.LETTER_STATE_PLACED:
+                cprint(letter, 'white', 'on_green', end='')
+            elif letter_state == GameState.LETTER_STATE_PRESENT:
+                cprint(letter, 'white', 'on_yellow', end='')
             else:
                 print('_', end='')
+
         if guess == state.answer:
             print("\nWELL DONE! {} guess(es)".format(state.guesses))
             return state.guesses
