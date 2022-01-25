@@ -3,6 +3,7 @@ import random
 from lib.player.player_interface import PlayerInterface
 from lib.game_state import GameState
 from lib.words.simple_word_list import SimpleWordList
+from lib.words.word_index import WordIndex
 
 class NaivePlayer(PlayerInterface):
     def __init__(self, game_state):
@@ -11,6 +12,7 @@ class NaivePlayer(PlayerInterface):
         self.guessed = set()
         self.filter = set()
         self.excludes = [set() for _ in range(game_state.word_length)]
+        #self.words = WordIndex(game_state.wordlist)
         self.words = SimpleWordList(game_state.wordlist)
 
     def guess(self, game_state, prev=None) -> str:
@@ -29,9 +31,9 @@ class NaivePlayer(PlayerInterface):
             # TODO: throw a proper exception here
             print("WTF, no candidates available!")
         else:
+            candidates = list(set(candidates).difference(self.guessed))
             guess = random.sample(candidates, 1)[0].upper()
             self.guessed.add(guess)
-            #self.candidates.remove(guess)
             return guess
 
     def update_state(self, result) -> None:

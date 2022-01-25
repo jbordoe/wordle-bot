@@ -1,44 +1,44 @@
 import unittest
 
-from lib.words.simple_word_list import SimpleWordList
+from lib.words.word_index import WordIndex
 
-class TestSimpleWordList(unittest.TestCase):
+class TestWordIndex(unittest.TestCase):
     def test_init(self):
-        words = 'foo bar baz'.split()
-        wl = SimpleWordList(words)
-        self.assertIsInstance(wl, SimpleWordList)
+        words = 'FOO BAR BAZ'.split()
+        index = WordIndex(words)
+        self.assertIsInstance(index, WordIndex)
 
     def test_find_words(self):
-        words = 'foo bar baz qux bat bob jib'.split()
-        wl = SimpleWordList(words)
+        words = 'FOO BAR BAZ QUX BAT BOB JIB'.split()
+        index = WordIndex(words)
 
-        matches = wl.find_words(
+        matches = index.find_words(
             placed_letters=['b', None, None]
         )
 
         self.assertEqual(
-            matches,
-            ['bar', 'baz', 'bat', 'bob'],
+            set(matches),
+            {'BAR', 'BAZ', 'BAT', 'BOB'},
             msg='lookup with placed'
         )
 
-        matches = wl.find_words(
+        matches = index.find_words(
             excludes=[{'b'}, set(), set()],
             contains={'b'}
         )
         self.assertEqual(
-            matches,
-            ['jib'],
+            set(matches),
+            {'JIB'},
             msg='lookup with contains, excludes'
         )
 
-        matches = wl.find_words(
+        matches = index.find_words(
             contains={'b'},
             filter={'a'}
         )
         self.assertEqual(
-            matches,
-            ['bob', 'jib'],
+            set(matches),
+            {'BOB', 'JIB'},
             msg='lookup with contains, filter'
         )
 
@@ -46,9 +46,9 @@ class TestSimpleWordList(unittest.TestCase):
         words = """
             COTTE DELET
         """.replace("\n", "").split()
-        wl = SimpleWordList(words)
+        index = WordIndex(words)
 
-        matches = wl.find_words(
+        matches = index.find_words(
             placed_letters=['', 'O', '', '', 'E'],
             contains={'E', 'T', 'O'},
             filter={'L', 'R', 'H', 'D'},
@@ -63,9 +63,9 @@ class TestSimpleWordList(unittest.TestCase):
         words = """
             SWAGE STAKE SPADE
         """.replace("\n", "").split()
-        wl = SimpleWordList(words)
+        index = WordIndex(words)
 
-        matches = wl.find_words(
+        matches = index.find_words(
             placed_letters=['S', '', 'A', '', 'E'],
             contains=set(),
             filter={'P', 'N', 'C', 'H', 'R', 'L', 'V', 'U', 'M', 'I', 'K', 'D', 'O', 'T'},
@@ -74,6 +74,23 @@ class TestSimpleWordList(unittest.TestCase):
         self.assertEqual(
             set(matches),
             {'SWAGE'},
+            msg='complex lookup'
+        )
+
+        words = """
+            CADET JAYET CARET CATER WATER TAPER TAXER 
+        """.replace("\n", "").split()
+        index = WordIndex(words)
+
+        matches = index.find_words(
+            placed_letters=['', 'A', '', 'E', 'R'],
+            contains={'T'},
+            filter={'N', 'L', 'B', 'M', 'S'},
+            excludes=[{'A'}, {'T'}, {'E', 'T'}, set(), {'A', 'T'}]
+        )
+        self.assertEqual(
+            set(matches),
+            {'TAPER', 'TAXER'},
             msg='complex lookup'
         )
 

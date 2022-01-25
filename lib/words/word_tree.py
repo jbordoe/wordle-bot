@@ -1,10 +1,11 @@
-class WordSetInterface:
+from lib.words.word_set_interface import WordSetInterface
+
+class WordTree(WordSetInterface):
     def __init__(self, word_collection):
-        pass
+        self.words = word_collection
 
     def find_words(
         self,
-        # TODO: just make it 'placed'
         placed_letters=None,
         contains=None,
         filter=None,
