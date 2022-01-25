@@ -2,6 +2,7 @@ import random
 
 from lib.player.player_interface import PlayerInterface
 from lib.game_state import GameState
+from lib.words.simple_word_list import SimpleWordList
 
 class NaivePlayer(PlayerInterface):
     def __init__(self, game_state):
@@ -10,28 +11,19 @@ class NaivePlayer(PlayerInterface):
         self.guessed = set()
         self.filter = set()
         self.excludes = [set() for _ in range(game_state.word_length)]
-        self.candidates = game_state.wordlist
+        self.words = SimpleWordList(game_state.wordlist)
 
     def guess(self, game_state, prev=None) -> str:
         placed_str = ''.join(self.placed)
         if len(placed_str) == game_state.word_length:
             return placed_str
 
-        candidates = []
-        # TODO: all this linear scanning is inefficient
-        # Can we use/build a tree structure perhaps?
-        for w in self.candidates:
-            invalid = False
-            # TODO: create set during init
-            if set(w).intersection(self.filter):
-                continue
-            for i in range(game_state.word_length):
-                if self.placed[i] and self.placed[i] != w[i]: invalid = True
-                if w[i] in self.excludes[i]: invalid = True
-                if invalid: break
-            if invalid or not set(w).issuperset(self.present): continue
-
-            candidates.append(w)
+        candidates = self.words.find_words(
+            placed_letters=self.placed,
+            contains=self.present,
+            filter=self.filter,
+            excludes=self.excludes
+        )
 
         if not candidates:
             # TODO: throw a proper exception here
@@ -39,7 +31,7 @@ class NaivePlayer(PlayerInterface):
         else:
             guess = random.sample(candidates, 1)[0].upper()
             self.guessed.add(guess)
-            self.candidates.remove(guess)
+            #self.candidates.remove(guess)
             return guess
 
     def update_state(self, result) -> None:
