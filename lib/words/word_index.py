@@ -24,14 +24,15 @@ class WordIndex(WordSetInterface):
         self.ordered_index = ordered_index
         self.unordered_index = unordered_index
         self.wordset = set(word_collection)
+        self.list = list(word_collection)
 
     # TODO: add param to filter given words (i.e old guesses)
     def find_words(
         self,
         placed_letters=[],
         contains=None,
-        filter=None,
-        excludes=None,
+        filter=set(),
+        excludes=[],
     ):
         # TODO: keep as debug log
 #        print(f"""
@@ -44,22 +45,17 @@ class WordIndex(WordSetInterface):
         placed_set = self._find_in_ordered(placed_pairs)
 
         contains_set = self._find_in_unordered(contains) if contains else None
-        filter_set = None
-        if filter:
-            filter_set = set()
-            for l in filter:
-                f = self._find_in_unordered([l])
-                filter_set = filter_set.union(f)
+        filter_set = set()
+        for l in filter:
+            f = self.unordered_index[l.upper()]
+            filter_set = filter_set.union(f)
         
-        excludes_set = None
-        if excludes:
-            excludes_set = set()
-            for i, ex in enumerate(excludes):
-                if not ex: continue
-                for l in ex:
-                    pair = (i, l)
-                    ex_set = self._find_in_ordered([pair])
-                    excludes_set = excludes_set.union(ex_set)
+        excludes_set = set()
+        for i, ex in enumerate(excludes):
+            if not ex: continue
+            for l in ex:
+                ex_set = self.ordered_index[i][l.upper()]
+                excludes_set = excludes_set.union(ex_set)
 
         result = self.wordset
         if placed_set != None: result = result.intersection(placed_set)

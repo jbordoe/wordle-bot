@@ -6,14 +6,14 @@ from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
 
 class NaivePlayer(PlayerInterface):
-    def __init__(self, game_state):
+    def __init__(self, game_state, words=None):
         self.placed = ['' for _ in range(game_state.word_length)]
         self.present = set()
         self.guessed = set()
         self.filter = set()
         self.excludes = [set() for _ in range(game_state.word_length)]
         #self.words = WordIndex(game_state.wordlist)
-        self.words = SimpleWordList(game_state.wordlist)
+        self.words = words or SimpleWordList(game_state.wordlist)
 
     def guess(self, game_state, prev=None) -> str:
         placed_str = ''.join(self.placed)

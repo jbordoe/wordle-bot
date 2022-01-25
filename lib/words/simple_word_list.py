@@ -12,6 +12,7 @@ class SimpleWordList(WordSetInterface):
                 }
             words.append(data)
         self.words = words
+        self.list = list(word_collection)
 
         self.len = len(list(word_collection)[0])
 
@@ -29,7 +30,6 @@ class SimpleWordList(WordSetInterface):
 
         for w in self.words:
             invalid = False
-            # TODO: create set during init
             if w['set'].intersection(filter): continue
             for i, w_i in enumerate(w['str']):
                 if placed[i] and placed[i] != w_i: invalid = True
