@@ -8,7 +8,9 @@ class NaivePlayer(PlayerInterface):
         self.placed = ['' for _ in range(game_state.word_length)]
         self.present = set()
         self.guessed = set()
+        self.filter = set()
         self.excludes = [set() for _ in range(game_state.word_length)]
+        self.candidates = game_state.wordlist
 
     def guess(self, game_state, prev=None) -> str:
         placed_str = ''.join(self.placed)
@@ -18,9 +20,11 @@ class NaivePlayer(PlayerInterface):
         candidates = []
         # TODO: all this linear scanning is inefficient
         # Can we use/build a tree structure perhaps?
-        for w in game_state.wordlist:
+        for w in self.candidates:
             invalid = False
-            if w in self.guessed: continue
+            # TODO: create set during init
+            if set(w).intersection(self.filter):
+                continue
             for i in range(game_state.word_length):
                 if self.placed[i] and self.placed[i] != w[i]: invalid = True
                 if w[i] in self.excludes[i]: invalid = True
@@ -35,13 +39,17 @@ class NaivePlayer(PlayerInterface):
         else:
             guess = random.sample(candidates, 1)[0].upper()
             self.guessed.add(guess)
+            self.candidates.remove(guess)
             return guess
 
     def update_state(self, result) -> None:
         letters = result.letters
+        guess = result.guess
         for i in range(len(letters)):
             pair = letters[i]
-            if not pair: continue
+            if not pair:
+                self.filter.add(guess[i])
+                continue
             l, l_state = pair
             if l_state == GameState.LETTER_STATE_PRESENT:
                 self.excludes[i].add(l)
