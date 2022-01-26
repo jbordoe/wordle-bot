@@ -8,6 +8,7 @@ requests = "*"
 termcolor = "*"
 alive-progress = "*"
 pyprof2calltree = "*"
+pyshadow = "*"
 
 [dev-packages]
 
