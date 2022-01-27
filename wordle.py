@@ -4,10 +4,7 @@ from termcolor import cprint
 from lib.game_state import GameState
 from lib.player.naive_player import NaivePlayer
 from lib.player.human_player import HumanPlayer
-
-# TODO: find a better list without proper nouns
-WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
-#WORDLIST_URL = "https://raw.githubusercontent.com/cduica/Oxford-Dictionary-Json/master/dicts.json"
+from lib.words.word_loader import WordLoader
 
 def menu():
     print("==== Menu ====")
@@ -19,8 +16,7 @@ def menu():
         choice = input().strip()
         words = None
         if choice == "1":
-#            words = [r['word'] for r in requests.get(WORDLIST_URL).json()] if not words else words
-            words = requests.get(WORDLIST_URL).json().keys() if not words else words
+            words = WordLoader.load_wordlist() if not words else words
             game(words)
         elif choice == "2":
             print("Bye!")

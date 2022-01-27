@@ -4,22 +4,12 @@ import json
 from lib.player.naive_player import NaivePlayer
 from lib.browser_game import BrowserGame
 from lib.words.word_index import WordIndex
+from lib.words.word_loader import WordLoader
 
 WORDLIST_PATH = "dict.json"
 
-def load_words(wordlen=5):
-    print("loading wordlist...")
-    all_words = json.load(open(WORDLIST_PATH)).keys()
-    word_list = []
-    for w in all_words:
-        if len(w) != wordlen or set(" -").intersection(set(w)):
-            continue
-        w = w.upper()
-        word_list.append(w)
-    return word_list
-
 def init_player(state):
-    words = load_words()
+    words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
     player = NaivePlayer(state, words=word_index)
     return player

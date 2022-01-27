@@ -1,3 +1,5 @@
+import logging
+
 from functools import reduce
 
 from lib.words.word_set_interface import WordSetInterface
@@ -34,13 +36,12 @@ class WordIndex(WordSetInterface):
         filter=set(),
         excludes=[],
     ):
-        # TODO: keep as debug log
-#        print(f"""
-#        placed_letters={placed_letters},
-#        contains={contains},
-#        filter={filter},
-#        excludes={excludes}
-#        """)
+        logging.debug(f"""
+        placed_letters={placed_letters},
+        contains={contains},
+        filter={filter},
+        excludes={excludes}
+        """)
         placed_pairs = [c for c in enumerate(placed_letters) if c[1]]
         placed_set = self._find_in_ordered(placed_pairs)
 

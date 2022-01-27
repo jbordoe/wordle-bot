@@ -6,23 +6,13 @@ from lib.game_state import GameState
 from lib.player.naive_player import NaivePlayer
 from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
+from lib.words.word_loader import WordLoader
 
-# TODO: find a better list without proper nouns
-#WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
-#WORDLIST_URL = "https://raw.githubusercontent.com/matthewreagan/WebstersEnglishDictionary/master/dictionary_compact.json"
-WORDLIST_URL = "https://raw.githubusercontent.com/cduica/Oxford-Dictionary-Json/master/dicts.json"
-
-RUNS = 10000
+RUNS = 1000
 
 def go():
     wordlen = 5
-    all_words = [r['word'] for r in requests.get(WORDLIST_URL).json()]
-    word_list = []
-    for w in all_words:
-        if len(w) != wordlen or set(" -").intersection(set(w)):
-            continue
-        w = w.upper()
-        word_list.append(w)
+    word_list = WordLoader.load_wordlist()
 
     print('running games')
     guesses = []
