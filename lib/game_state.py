@@ -22,5 +22,9 @@ class GameState(GameStateInterface):
 
         self.guesses += 1
 
-        res = GameGuessResult(guess, letters=letters)
+        res = GameGuessResult(
+            guess,
+            letters=letters,
+            correct=guess == self.answer
+        )
         return res

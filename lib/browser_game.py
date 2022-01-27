@@ -83,6 +83,8 @@ class BrowserGame(GameStateInterface):
             letter_results.append(res)
 
         share_btn = self._get_share_btn()
+        # TODO: this button also appears when we lose!
+        # Improve win detection (maybe also pull the answer when it is shown)
         guess_correct = not not share_btn
         res_text = self._get_result_text(share_btn) if guess_correct else None
 

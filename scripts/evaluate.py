@@ -8,14 +8,15 @@ from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
 
 # TODO: find a better list without proper nouns
-WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
+#WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
 #WORDLIST_URL = "https://raw.githubusercontent.com/matthewreagan/WebstersEnglishDictionary/master/dictionary_compact.json"
+WORDLIST_URL = "https://raw.githubusercontent.com/cduica/Oxford-Dictionary-Json/master/dicts.json"
 
-RUNS = 100
+RUNS = 10000
 
 def go():
     wordlen = 5
-    all_words = requests.get(WORDLIST_URL).json().keys()
+    all_words = [r['word'] for r in requests.get(WORDLIST_URL).json()]
     word_list = []
     for w in all_words:
         if len(w) != wordlen or set(" -").intersection(set(w)):
@@ -42,7 +43,7 @@ RESULTS
     # TODO: plot distribution of guesses
 
 def game(words, wordlen=5):
-    state = GameState(words.list, wordlen=wordlen)
+    state = GameState(words.list)
     player = NaivePlayer(state, words=words)
     result = None
     while True:
