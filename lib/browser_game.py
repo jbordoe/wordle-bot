@@ -67,7 +67,7 @@ class BrowserGame(GameStateInterface):
         letter_results = []
         for tile in tiles:
             evaluation = tile.get_attribute('evaluation')
-            letter = tile.get_attribute('letter')
+            letter = tile.get_attribute('letter').upper()
             res = None
             if evaluation == 'correct':
                 res = (letter, self.LETTER_STATE_PLACED)
