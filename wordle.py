@@ -3,9 +3,11 @@ from termcolor import cprint
 
 from lib.game_state import GameState
 from lib.player.naive_player import NaivePlayer
+from lib.player.human_player import HumanPlayer
 
 # TODO: find a better list without proper nouns
 WORDLIST_URL = "https://raw.githubusercontent.com/dwyl/english-words/master/words_dictionary.json"
+#WORDLIST_URL = "https://raw.githubusercontent.com/cduica/Oxford-Dictionary-Json/master/dicts.json"
 
 def menu():
     print("==== Menu ====")
@@ -15,9 +17,11 @@ def menu():
     2. Quit
 """)
         choice = input().strip()
-
+        words = None
         if choice == "1":
-            game()
+#            words = [r['word'] for r in requests.get(WORDLIST_URL).json()] if not words else words
+            words = requests.get(WORDLIST_URL).json().keys() if not words else words
+            game(words)
         elif choice == "2":
             print("Bye!")
             break
@@ -25,14 +29,12 @@ def menu():
             print("Unrecognized input")
 
 
-def game(wordlen=5):
-    # TODO: save to a given location, only dl if not present
-    all_words = requests.get(WORDLIST_URL).json().keys()
+def game(all_words, wordlen=5):
     words = [w.upper() for w in all_words if len(w) == wordlen]
 
-    state = GameState(words, wordlen=wordlen)
-#    player = HumanPlayer()
-    player = NaivePlayer(state)
+    state = GameState(words)
+    player = HumanPlayer()
+#    player = NaivePlayer(state, verbosity=1)
     print('' * wordlen)
 
     result = None

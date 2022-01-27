@@ -1,13 +1,14 @@
 import random
 from lib.game_guess_result import GameGuessResult
+from lib.game_state_interface import GameStateInterface
 
-class GameState:
+class GameState(GameStateInterface):
     LETTER_STATE_PRESENT = 0
     LETTER_STATE_PLACED = 1
 
-    def __init__(self, wordlist, wordlen=5):
+    def __init__(self, wordlist=None):
         self.wordlist = wordlist
-        self.word_length = wordlen
+        self.word_length = len(wordlist[0])
         self.answer = random.sample(wordlist, 1)[0].upper()
         self.guesses = 0
 
