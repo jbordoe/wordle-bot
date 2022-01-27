@@ -42,10 +42,9 @@ class NaivePlayer(PlayerInterface):
         letters = result.letters
         guess = result.guess
         seen = set()
-        for i in range(len(letters)):
-            pair = letters[i]
+        for i, pair in enumerate(letters):
             if not pair:
-                self.filter.add(guess[i])
+                if not guess[i] in seen: self.filter.add(guess[i])
                 continue
             l, l_state = pair
             if l_state == GameState.LETTER_STATE_PRESENT:
@@ -58,4 +57,4 @@ class NaivePlayer(PlayerInterface):
                 # that a placed letter occurs again?
                 self.filter.discard(l)
                 self.present.discard(l)
-            seen.add(l)
+            seen.add(guess[i])
