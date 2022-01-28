@@ -1,7 +1,7 @@
 {
     "_meta": {
         "hash": {
-            "sha256": "5c0ea9ad81a5461a208089865d90ffdd6066b7f8e07f848f5d74893c4fc99c16"
+            "sha256": "f8860f9da6c2589aac8d3d3c8ccbd3a7909b77f4b28d849c319410a36705a3af"
         },
         "pipfile-spec": 6,
         "requires": {
@@ -276,6 +276,15 @@
             ],
             "index": "pypi",
             "version": "==1.1.0"
+        },
+        "termgraph": {
+            "editable": true,
+            "git": "https://github.com/jbordoe/termgraph.git",
+            "hashes": [
+                "sha256:36ff2098e41eeab1e7cdda7366dc3e5b514ea799fa3e77537564492a7edefdd5",
+                "sha256:c181c168c2278a7f7161de05b1033396a2f6b06ab260ddf987b0320fae93ff8e"
+            ],
+            "ref": "2108857c2b4d843282f792fb91d10ccf4c58509f"
         },
         "trio": {
             "hashes": [

@@ -56,7 +56,6 @@ class WordIndex(WordSetInterface):
         if placed_set != None: result = result.intersection(placed_set)
         if contains_set != None: result = result.intersection(contains_set)
         if filter_set != None: result = result.difference(filter_set)
-        #if excludes_set != None: result = result.difference(excludes_set)
 
         return list(result)
         
