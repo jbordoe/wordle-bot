@@ -10,6 +10,8 @@ alive-progress = "*"
 pyprof2calltree = "*"
 pyshadow = "*"
 termgraph = {editable = true, git = "https://github.com/jbordoe/termgraph.git"}
+jupyterlab = "*"
+seaborn = "*"
 
 [dev-packages]
 
