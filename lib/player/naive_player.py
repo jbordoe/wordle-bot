@@ -4,15 +4,17 @@ from lib.player.player_interface import PlayerInterface
 from lib.game_state import GameState
 from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
+from lib.random_ranker import RandomRanker
 
 class NaivePlayer(PlayerInterface):
-    def __init__(self, game_state, words=None, verbosity=0):
+    def __init__(self, game_state, words=None, ranker=None, verbosity=0):
         self.placed = ['' for _ in range(game_state.word_length)]
         self.present = set()
         self.guessed = set()
         self.filter = set()
         self.excludes = [set() for _ in range(game_state.word_length)]
         self.words = words or SimpleWordList(game_state.wordlist)
+        self.ranker = ranker or RandomRanker(game_state.wordlist)
         self.verbosity = verbosity
 
     def guess(self, game_state, prev=None) -> str:
@@ -32,7 +34,7 @@ class NaivePlayer(PlayerInterface):
             print("WTF, no candidates available!")
         else:
             candidates = list(set(candidates).difference(self.guessed))
-            guess = random.sample(candidates, 1)[0].upper()
+            guess = self.ranker.rank(candidates)[0]
             self.guessed.add(guess)
             if self.verbosity:
                 print(f"guess = {guess}")

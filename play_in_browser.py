@@ -5,13 +5,15 @@ from lib.player.naive_player import NaivePlayer
 from lib.browser_game import BrowserGame
 from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
+from lib.stat_ranker import StatRanker
 
 WORDLIST_PATH = "dict.json"
 
 def init_player(state):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
-    player = NaivePlayer(state, words=word_index)
+    ranker = StatRanker(words)
+    player = NaivePlayer(state, words=word_index, ranker=ranker)
     return player
 
 def go():
