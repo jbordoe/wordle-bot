@@ -1,8 +1,10 @@
+import argparse
 import time
 import json
 
 from lib.player.naive_player import NaivePlayer
 from lib.browser_game import BrowserGame
+from lib.absurdle_game import AbsurdleGame
 from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
 from lib.stat_ranker import StatRanker
@@ -16,11 +18,12 @@ def init_player(state):
     player = NaivePlayer(state, words=word_index, ranker=ranker)
     return player
 
-def go():
+def go(variant='wordle', headless=False):
     state = None
     try:
-        print("Visiting wordle site")
-        state = BrowserGame(headless=False) 
+        print("Visiting game site.")
+        game_class = BrowserGame if variant == 'wordle' else AbsurdleGame
+        state = game_class(headless=headless) 
         player = init_player(state)
 
         result = None
@@ -44,7 +47,7 @@ def go():
             else:
                 guesses += 1
                 if result.correct:
-                    print("Wordle found!")
+                    print("Solution found!")
                     print(result.text)
                     print("Closing browser in 30 seconds")
                     time.sleep(30)
@@ -53,10 +56,28 @@ def go():
                     print("Updating...")
                     player.update_state(result)
 
-            if guesses == 6:
-                print("Could not find the Wordle!")
+            if state.max_guesses and guesses >= state.max_guesses:
+                print("Could not find the solution!")
                 break
     finally:
         if state: state.quit()
 
-go()
+
+parser=argparse.ArgumentParser(description='Have a bot play wordle (or a variant) in the browser')
+parser.add_argument(
+    '--headless', action='store_true', help='Run with a visible browser')
+parser.add_argument(
+    '-v', '--variant', type=str, required=False, default='wordle', help='Number of games to run')
+
+args = parser.parse_args()
+
+variant = 'wordle'
+if args.variant not in ('wordle', 'absurdle'):
+    raise Exception(f"Invalid variant {variant}")
+else:
+    variant = args.variant
+
+go(
+    variant=variant,
+    headless=args.headless,
+)

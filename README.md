@@ -24,10 +24,17 @@ pipenv shell
 
 ### In-browser play
 
-This will open a browser and play on the wordle site. 
+Have the bot play a game of wordle in a browser
 ```bash
-python play_in_browser.py
+python play.py -v wordle
 ```
+
+Have the bot play a game of absurdle in a headless browser
+```bash
+python play.py -v absurdle --headless
+```
+
+use `--help` for more information
 
 ### Command-line game
 ```bash

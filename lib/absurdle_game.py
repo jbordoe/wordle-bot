@@ -1,6 +1,7 @@
 import time
 
 from selenium import webdriver
+from selenium.webdriver.firefox.options import Options
 from selenium.common.exceptions import NoSuchElementException
 from pyshadow.main import Shadow
 from tkinter import Tk
@@ -13,9 +14,11 @@ class AbsurdleGame(GameStateInterface):
 
     def __init__(self, headless=True):
         self.guesses = 0
-        self.browser = self._init_browser()
         self.word_length = 5
         self.max_guesses = None
+        self.headless = headless
+        
+        self.browser = self._init_browser()
 
     def update(self, guess):
         for letter in guess.upper(): self._press_key(letter)
@@ -33,10 +36,10 @@ class AbsurdleGame(GameStateInterface):
         self.browser.driver.quit()
 
     def _init_browser(self):
-        profile = webdriver.FirefoxProfile()
-        profile.set_preference("browser.privatebrowsing.autostart", True)
+        options = Options()
+        options.headless = self.headless
 
-        driver = webdriver.Firefox(firefox_profile=profile)
+        driver = webdriver.Firefox(options=options)
         driver.set_page_load_timeout(10)
 
         browser = Shadow(driver)
