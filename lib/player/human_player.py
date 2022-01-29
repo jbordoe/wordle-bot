@@ -1,16 +1,20 @@
+import sys
 from lib.player.player_interface import PlayerInterface
 
 class HumanPlayer(PlayerInterface):
     def guess(self, game_state, prev=None) -> str:
+        prompt = "Enter your guess: "
         while True:
-            print("""
-Enter your guess! Must be a {}-letter word
-    """.format(game_state.word_length))
+            print(prompt, end='')
             guess = input().strip().upper()
             if not guess in game_state.wordlist:
-                print("Your guess is not valid")
+                sys.stdout.write("\033[F")
+                print("\r" + " " * (len(guess) + len(prompt)) + "\r", end='')
+                prompt = "\rNot Valid, try again: "
             else:
-                return guess
+                sys.stdout.write("\033[F")
+                print("\r" + " " * (len(guess) + len(prompt)) + "\r", end='')
+                return guess.upper()
 
     def update_state(self, result) -> None:
         pass

@@ -1,4 +1,4 @@
-import requests
+import argparse
 from termcolor import cprint
 
 from lib.dummy_wordle_game import DummyWordleGame
@@ -36,17 +36,16 @@ def game(all_words, wordlen=5):
 
     result = None
     while True:
-        print("========= GUESS #{} =========".format(state.guesses + 1))
         guess = player.guess(state, prev=result)
         result = state.update(guess)
-        for pair in result.letters:
+        for i, pair in enumerate(result.letters):
             letter, letter_state = pair if pair else (None, None)
             if letter_state == GameStateInterface.LETTER_STATE_PLACED:
                 cprint(letter, 'white', 'on_green', end='', attrs=['bold'])
             elif letter_state == GameStateInterface.LETTER_STATE_PRESENT:
                 cprint(letter, 'white', 'on_yellow', end='', attrs=['bold'])
             else:
-                print('_', end='')
+                cprint(guess[i], end='')
 
         if guess == state.answer:
             print("\nWELL DONE! {} guess(es)".format(state.guesses))
