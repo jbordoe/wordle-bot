@@ -1,14 +1,17 @@
 import argparse
+import sys
 from termcolor import cprint
+from pyfiglet import Figlet
 
 from lib.dummy_wordle_game import DummyWordleGame
 from lib.game_state_interface import GameStateInterface 
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
 from lib.words.word_loader import WordLoader
+from lib.stat_ranker import StatRanker
 
-def menu():
-    print("==== Menu ====")
+def menu(player_type='human', verbosity=1):
+    cprint("Menu:", attrs=['bold', 'underline'])
     while True:
         print("""
     1. New game
@@ -17,22 +20,31 @@ def menu():
         choice = input().strip()
         words = None
         if choice == "1":
+            sys.stdout.write("\033[F")
             words = WordLoader.load_wordlist() if not words else words
-            game(words)
+            game(words, player_type, verbosity=verbosity)
         elif choice == "2":
+            sys.stdout.write("\033[F")
             print("Bye!")
             break
         else:
+            sys.stdout.write("\033[F")
             print("Unrecognized input")
 
 
-def game(all_words, wordlen=5):
-    words = [w.upper() for w in all_words if len(w) == wordlen]
-
+def game(words, player_type, wordlen=5, verbosity=1):
     state = DummyWordleGame(words)
-    player = HumanPlayer()
-#    player = BotPlayer(state, verbosity=1)
-    print('' * wordlen)
+    player = None
+    if player_type == 'human':
+        player = HumanPlayer()
+    else:
+        ranker = StatRanker(words, b=0.7)
+        player = BotPlayer(
+            state,
+            ranker=ranker,
+            verbosity=verbosity
+        )
+    print('_' * wordlen)
 
     result = None
     while True:
@@ -48,11 +60,28 @@ def game(all_words, wordlen=5):
                 cprint(guess[i], end='')
 
         if guess == state.answer:
-            print("\nWELL DONE! {} guess(es)".format(state.guesses))
+            cprint(f"\nSolved! {state.guesses} guess(es)", 'green')
             return state.guesses
         else:
             player.update_state(result)
         print('')
 
-# TODO: add a cool figlet banner
-menu()
+f = Figlet(font='roman')
+cprint("\n" + f.renderText('Wordle'), 'cyan')
+
+parser=argparse.ArgumentParser(description='Play wordle on the command line.')
+parser.add_argument(
+    '-p', '--player', type=str, required=False, default='human', help='Type of player (human or bot)')
+
+parser.add_argument(
+    '-v', '--verbosity', type=int, required=False, default=1, help='How much text to output')
+args = parser.parse_args()
+
+player = 'human'
+if args.player not in ('human', 'bot'):
+    raise Exception(f"Invalid player {player}")
+
+menu(
+    player_type=args.player,
+    verbosity=args.verbosity
+)

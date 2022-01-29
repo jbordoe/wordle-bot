@@ -12,6 +12,7 @@ pyshadow = "*"
 termgraph = {editable = true, git = "https://github.com/jbordoe/termgraph.git"}
 jupyterlab = "*"
 seaborn = "*"
+pyfiglet = "*"
 
 [dev-packages]
 
