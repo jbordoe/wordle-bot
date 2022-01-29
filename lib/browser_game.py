@@ -1,6 +1,3 @@
-from lib.game_guess_result import GameGuessResult
-from lib.game_state_interface import GameStateInterface
-
 import time
 
 from selenium import webdriver
@@ -8,10 +5,8 @@ from selenium.common.exceptions import NoSuchElementException
 from pyshadow.main import Shadow
 from tkinter import Tk
 
-from lib.player.naive_player import NaivePlayer
-from lib.game_state import GameState
-from lib.words.word_index import WordIndex
 from lib.game_guess_result import GameGuessResult
+from lib.game_state_interface import GameStateInterface
 
 class BrowserGame(GameStateInterface):
     WORDLE_URL = "https://www.powerlanguage.co.uk/wordle/"
@@ -20,6 +15,7 @@ class BrowserGame(GameStateInterface):
         self.guesses = 0
         self.browser = self._init_browser()
         self.word_length = 5
+        self.max_guesses = 6
 
     def update(self, guess):
         for letter in guess: self._press_key(letter)
