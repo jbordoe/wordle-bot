@@ -2,8 +2,8 @@ import argparse
 import time
 import json
 
-from lib.player.naive_player import NaivePlayer
-from lib.browser_game import BrowserGame
+from lib.player.bot_player import BotPlayer
+from lib.wordle_game import WordleGame
 from lib.absurdle_game import AbsurdleGame
 from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
@@ -15,14 +15,14 @@ def init_player(state):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
     ranker = StatRanker(words)
-    player = NaivePlayer(state, words=word_index, ranker=ranker)
+    player = BotPlayer(state, words=word_index, ranker=ranker)
     return player
 
 def go(variant='wordle', headless=False):
     state = None
     try:
         print("Visiting game site.")
-        game_class = BrowserGame if variant == 'wordle' else AbsurdleGame
+        game_class = WordleGame if variant == 'wordle' else AbsurdleGame
         state = game_class(headless=headless) 
         player = init_player(state)
 

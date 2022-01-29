@@ -9,8 +9,8 @@ from tkinter import Tk
 from lib.game_guess_result import GameGuessResult
 from lib.game_state_interface import GameStateInterface
 
-class BrowserGame(GameStateInterface):
-    WORDLE_URL = "https://www.powerlanguage.co.uk/wordle/"
+class WordleGame(GameStateInterface):
+    GAME_URL = "https://qntm.org/files/wordle/index.html"
 
     def __init__(self, headless=True):
         self.guesses = 0
@@ -43,7 +43,7 @@ class BrowserGame(GameStateInterface):
 
         browser = Shadow(driver)
         
-        browser.driver.get(self.WORDLE_URL)
+        browser.driver.get(self.GAME_URL)
         time.sleep(1)    
 
         browser.find_element('game-app').click()

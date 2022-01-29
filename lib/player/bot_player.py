@@ -1,12 +1,12 @@
 import random
 
 from lib.player.player_interface import PlayerInterface
-from lib.game_state import GameState
+from lib.game_state_interface import GameStateInterface 
 from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
 from lib.random_ranker import RandomRanker
 
-class NaivePlayer(PlayerInterface):
+class BotPlayer(PlayerInterface):
     def __init__(self, game_state, words=None, ranker=None, verbosity=0):
         self.placed = ['' for _ in range(game_state.word_length)]
         self.present = set()
@@ -49,11 +49,11 @@ class NaivePlayer(PlayerInterface):
                 if not guess[i] in seen: self.filter.add(guess[i])
                 continue
             l, l_state = pair
-            if l_state == GameState.LETTER_STATE_PRESENT:
+            if l_state == GameStateInterface.LETTER_STATE_PRESENT:
                 self.excludes[i].add(l)
                 self.present.add(l)
                 self.filter.discard(l)
-            elif l_state == GameState.LETTER_STATE_PLACED:
+            elif l_state == GameStateInterface.LETTER_STATE_PLACED:
                 self.placed[i] = l
                 # TODO: how do wa account for the possibility
                 # that a placed letter occurs again?

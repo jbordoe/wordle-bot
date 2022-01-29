@@ -2,10 +2,7 @@ import random
 from lib.game_guess_result import GameGuessResult
 from lib.game_state_interface import GameStateInterface
 
-class GameState(GameStateInterface):
-    LETTER_STATE_PRESENT = 0
-    LETTER_STATE_PLACED = 1
-
+class DummyWordleGame(GameStateInterface):
     def __init__(self, wordlist=None):
         self.wordlist = wordlist
         self.word_length = len(wordlist[0])

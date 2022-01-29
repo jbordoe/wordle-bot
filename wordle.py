@@ -1,8 +1,9 @@
 import requests
 from termcolor import cprint
 
-from lib.game_state import GameState
-from lib.player.naive_player import NaivePlayer
+from lib.dummy_wordle_game import DummyWordleGame
+from lib.game_state_interface import GameStateInterface 
+from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
 from lib.words.word_loader import WordLoader
 
@@ -28,9 +29,9 @@ def menu():
 def game(all_words, wordlen=5):
     words = [w.upper() for w in all_words if len(w) == wordlen]
 
-    state = GameState(words)
+    state = DummyWordleGame(words)
     player = HumanPlayer()
-#    player = NaivePlayer(state, verbosity=1)
+#    player = BotPlayer(state, verbosity=1)
     print('' * wordlen)
 
     result = None
@@ -40,9 +41,9 @@ def game(all_words, wordlen=5):
         result = state.update(guess)
         for pair in result.letters:
             letter, letter_state = pair if pair else (None, None)
-            if letter_state == GameState.LETTER_STATE_PLACED:
+            if letter_state == GameStateInterface.LETTER_STATE_PLACED:
                 cprint(letter, 'white', 'on_green', end='', attrs=['bold'])
-            elif letter_state == GameState.LETTER_STATE_PRESENT:
+            elif letter_state == GameStateInterface.LETTER_STATE_PRESENT:
                 cprint(letter, 'white', 'on_yellow', end='', attrs=['bold'])
             else:
                 print('_', end='')

@@ -4,9 +4,8 @@ from termcolor import cprint
 from alive_progress import alive_bar
 from termgraph.module import Data, BarChart, Args, Colors
 
-from lib.game_state import GameState
-from lib.player.naive_player import NaivePlayer
-from lib.words.simple_word_list import SimpleWordList
+from lib.dummy_wordle_game import DummyWordleGame
+from lib.player.bot_player import BotPlayer
 from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
 from lib.stat_ranker import StatRanker
@@ -17,7 +16,6 @@ def go(runs, sample_size):
 
     print('running games')
     guesses = {}
-    #words = SimpleWordList(word_list)
     words = WordIndex(word_list)
     ranker = StatRanker(word_list)
     with alive_bar(runs, bar='filling', spinner='dots') as bar:
@@ -57,8 +55,8 @@ RESULTS
     chart.draw()
 
 def game(words, ranker, wordlen=5):
-    state = GameState(words.list)
-    player = NaivePlayer(state, words=words, ranker=ranker)
+    state = DummyWordleGame(words.list)
+    player = BotPlayer(state, words=words, ranker=ranker)
     result = None
     while True:
         guess = player.guess(state, prev=result)
