@@ -10,7 +10,7 @@ from lib.game_guess_result import GameGuessResult
 from lib.game_state_interface import GameStateInterface
 
 class WordleGame(GameStateInterface):
-    GAME_URL = "https://qntm.org/files/wordle/index.html"
+    GAME_URL = "https://www.powerlanguage.co.uk/wordle/"
 
     def __init__(self, headless=True):
         self.guesses = 0

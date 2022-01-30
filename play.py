@@ -14,7 +14,7 @@ WORDLIST_PATH = "dict.json"
 def init_player(state):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
-    ranker = StatRanker(words)
+    ranker = StatRanker(words, b=0.3)
     player = BotPlayer(state, words=word_index, ranker=ranker)
     return player
 
