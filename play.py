@@ -14,7 +14,7 @@ WORDLIST_PATH = "dict.json"
 def init_player(state):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
-    ranker = StatRanker(words, b=0.3)
+    ranker = StatRanker(words)
     player = BotPlayer(state, words=word_index, ranker=ranker)
     return player
 
@@ -58,6 +58,7 @@ def go(variant='wordle', headless=False):
 
             if state.max_guesses and guesses >= state.max_guesses:
                 print("Could not find the solution!")
+                print(result.text)
                 break
     finally:
         if state: state.quit()
