@@ -29,7 +29,7 @@ Have the bot play a game of wordle in a browser
 python play.py -v wordle
 ```
 
-Have the bot play a game of absurdle in a headless browser
+Have the bot play a game of [absurdle](https://qntm.org/wordle) in a headless browser
 ```bash
 python play.py -v absurdle --headless
 ```
