@@ -52,6 +52,7 @@ class WordleGame(GameStateInterface):
     def _press_key(self, letter):
         keyboard = self.browser.find_element('#keyboard')
         key_el = keyboard.find_element('css selector', f'button[data-key="{letter.lower()}"]')
+        # TODO: why are clicks spamming 'QA--QAQA True'?
         key_el.click()
 
     def _clear_row(self):
@@ -85,7 +86,7 @@ class WordleGame(GameStateInterface):
         game_won = not self._game_lost()
         guess_correct = game_over and game_won
 
-        res_text = self._get_result_text(share_btn) if guess_correct else None
+        res_text = self._get_result_text(share_btn) if game_over else None
 
         result = GameGuessResult(
             current_row.get_attribute('letters'),

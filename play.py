@@ -1,4 +1,5 @@
 import argparse
+from termcolor import cprint
 import time
 import json
 
@@ -21,43 +22,43 @@ def init_player(state):
 def go(variant='wordle', headless=False):
     state = None
     try:
-        print("Visiting game site.")
+        cprint("Visiting game site.", attrs=['dark'])
         game_class = WordleGame if variant == 'wordle' else AbsurdleGame
-        state = game_class(headless=headless) 
+        state = game_class(headless=headless)
         player = init_player(state)
 
         result = None
-        guesses = 0 
+        guesses = 0
 
         while True:
-            print('Selecting a word...')
+            cprint('Selecting a word...', attrs=['dark'])
             guess = player.guess(state, prev=result)
 
             if not guess:
                 print(result.letters)
-                raise Exception("Could not find a word!")
+                raise Exception("Could not find a word!", 'red')
 
-            print(f'Guess #{guesses+1} is {guess}')
+            cprint(f'Guess #{guesses+1} is {guess}', 'cyan', attrs=['bold'])
 
-            print("Checking results...")
+            cprint("Checking results...", attrs=['dark'])
             result = state.update(guess)
 
             if not result:
-                print("Guess was invalid, trying something else")
+                cprint("Guess was invalid, trying something else", 'yellow')
             else:
                 guesses += 1
                 if result.correct:
-                    print("Solution found!")
+                    cprint("Solution found!", 'green')
                     print(result.text)
                     print("Closing browser in 30 seconds")
                     time.sleep(30)
                     break
                 else:
-                    print("Updating...")
+                    cprint("Updating...", attrs=['dark'])
                     player.update_state(result)
 
             if state.max_guesses and guesses >= state.max_guesses:
-                print("Could not find the solution!")
+                cprint("Could not find the solution!", 'red')
                 print(result.text)
                 break
     finally:
