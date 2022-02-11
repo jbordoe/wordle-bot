@@ -10,7 +10,7 @@ from lib.game_guess_result import GameGuessResult
 from lib.game_state_interface import GameStateInterface
 
 class WordleGame(GameStateInterface):
-    GAME_URL = "https://www.powerlanguage.co.uk/wordle/"
+    GAME_URL = "https://www.nytimes.com/games/wordle/index.html"
 
     def __init__(self, headless=True):
         self.guesses = 0
@@ -22,7 +22,7 @@ class WordleGame(GameStateInterface):
     def update(self, guess):
         for letter in guess: self._press_key(letter)
         self._press_key("↵")
-        time.sleep(4)
+        time.sleep(5)
 
         result = self._get_result()
 
@@ -46,6 +46,7 @@ class WordleGame(GameStateInterface):
         browser.driver.get(self.GAME_URL)
         time.sleep(1)
 
+        browser.find_element('button#pz-gdpr-btn-closex').click()
         browser.find_element('game-app').click()
         return browser
 
