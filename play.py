@@ -20,7 +20,14 @@ THEMES = {
     'circles': {'absent': '⚫️', 'present': '🟡', 'placed': '🟢', 'dark': True},
     'clothes': {'absent': '🎩', 'present': '🩳', 'placed': '🩲', 'dark': True},
     'food':    {'absent': '🥚', 'present': '🍋', 'placed': '🍏', 'dark': False},
-
+    'emoji':   {'absent': '☹️',  'present': '😐', 'placed': '🙂', 'dark': False},
+    'smile':   {'absent': '😐', 'present': '🙂', 'placed': '😃', 'dark': False},
+    'tree':    {'absent': '🌱', 'present': '🌿', 'placed': '🌳', 'dark': False},
+    'bird':    {'absent': '🥚', 'present': '🐣', 'placed': '🐓', 'dark': False},
+    'medals':  {'absent': '🥉', 'present': '🥈', 'placed': '🥇', 'dark': False},
+    'moon1':   {'absent': '🌑', 'present': '🌗', 'placed': '🌕', 'dark': False},
+    'moon2':   {'absent': '🌚', 'present': '🌜', 'placed': '🌝', 'dark': False},
+    'weather': {'absent': '⛈', 'present': '🌥', 'placed': '☀️', 'dark': False},
     'foodmix': {'absent': '🥚🦴🍚🥛🎂', 'present': '🧀🍌🍋🥐', 'placed': '🥬🥦🥒🥝🍏', 'dark': False},
     'misc': {
         'absent':  '🌚💣🏴🎮🎱🔌📞',
