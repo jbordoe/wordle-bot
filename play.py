@@ -3,6 +3,7 @@ from termcolor import cprint
 import time
 import json
 import random
+import re
 
 from lib.player.bot_player import BotPlayer
 from lib.wordle_game import WordleGame
@@ -27,7 +28,7 @@ THEMES = {
     'medals':  {'absent': '🥉', 'present': '🥈', 'placed': '🥇', 'dark': False},
     'moon1':   {'absent': '🌑', 'present': '🌗', 'placed': '🌕', 'dark': False},
     'moon2':   {'absent': '🌚', 'present': '🌜', 'placed': '🌝', 'dark': False},
-    'weather': {'absent': '⛈', 'present': '🌥', 'placed': '☀️', 'dark': False},
+    'weather': {'absent': '⛈', 'present': '🌥', 'placed': '🌞', 'dark': False},
     'foodmix': {'absent': '🥚🦴🍚🥛🎂', 'present': '🧀🍌🍋🥐', 'placed': '🥬🥦🥒🥝🍏', 'dark': False},
     'misc': {
         'absent':  '🌚💣🏴🎮🎱🔌📞',
@@ -66,7 +67,7 @@ def map_result(result, theme):
     return result
 
 
-def go(variant='wordle', headless=False, theme='default'):
+def go(variant='wordle', headless=False, theme='default', initial_guesses=[]):
     state = None
     try:
         cprint("Visiting game site.", attrs=['dark'])
@@ -75,17 +76,20 @@ def go(variant='wordle', headless=False, theme='default'):
         player = init_player(state)
 
         result = None
-        guesses = 0
+        n_guesses = 0
 
         while True:
             cprint('Selecting a word...', attrs=['dark'])
-            guess = player.guess(state, prev=result)
+            if initial_guesses:
+                guess = initial_guesses.pop(0)
+            else:
+                guess = player.guess(state, prev=result)
 
             if not guess:
                 print(result.letters)
                 raise Exception("Could not find a word!", 'red')
 
-            cprint(f'Guess #{guesses+1} is {guess}', 'cyan', attrs=['bold'])
+            cprint(f'Guess #{n_guesses+1} is {guess}', 'cyan', attrs=['bold'])
 
             cprint("Checking results...", attrs=['dark'])
             result = state.update(guess)
@@ -93,7 +97,7 @@ def go(variant='wordle', headless=False, theme='default'):
             if not result:
                 cprint("Guess was invalid, trying something else", 'yellow')
             else:
-                guesses += 1
+                n_guesses += 1
                 if result.correct:
                     cprint("Solution found!", 'green')
                     print(map_result(result.text, theme))
@@ -105,7 +109,7 @@ def go(variant='wordle', headless=False, theme='default'):
                     cprint("Updating...", attrs=['dark'])
                     player.update_state(result)
 
-            if state.max_guesses and guesses >= state.max_guesses:
+            if state.max_guesses and n_guesses >= state.max_guesses:
                 cprint("Could not find the solution!", 'red')
                 print(result.text)
                 break
@@ -119,6 +123,8 @@ parser.add_argument(
 parser.add_argument(
     '-v', '--variant', type=str, required=False, default='wordle', help='Number of games to run')
 parser.add_argument(
+    '-g', '--guesses', type=str, required=False, default=None, help='Comma-separated list of initial guesses.')
+parser.add_argument(
     '-t', '--theme',
     type=str,
     required=False,
@@ -128,6 +134,7 @@ parser.add_argument(
 
 args = parser.parse_args()
 
+initial_guesses = []
 variant = 'wordle'
 if args.variant not in ('wordle', 'absurdle'):
     raise Exception(f"Invalid variant: {variant}")
@@ -137,8 +144,15 @@ else:
 if args.theme not in VALID_THEMES:
     raise Exception(f"Invalid theme: {args.theme}")
 
+if args.guesses:
+    if re.match(r'[a-zA-Z]{5}(,[a-zA-Z]{5})*', args.guesses):
+        initial_guesses = args.guesses.upper().split(',')
+    else:
+        raise Exception("Invalid guesses!")
+
 go(
     variant=variant,
     headless=args.headless,
+    initial_guesses=initial_guesses,
     theme=args.theme
 )

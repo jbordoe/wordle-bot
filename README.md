@@ -29,6 +29,11 @@ Have the bot play a game of wordle in a browser
 python play.py -v wordle
 ```
 
+Play wordle in a browser, with `salet` and `unfit` as the first guesses 
+```bash
+python play.py -v wordle -g salet,unfit
+```
+
 Have the bot play a game of [absurdle](https://qntm.org/wordle) in a headless browser
 ```bash
 python play.py -v absurdle --headless
