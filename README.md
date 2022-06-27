@@ -50,3 +50,5 @@ python wordle.py
 ```bash
 python -m unittest
 ```
+
+Test
