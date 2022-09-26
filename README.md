@@ -1,5 +1,7 @@
 # wordle-bot
 
+![](https://github.com/jbordoe/wordle-bot/blob/main/docs/wordlebot_50.png?raw=true)
+
 A bot that plays [wordle](https://www.powerlanguage.co.uk/wordle/)
 
 ## Setup
