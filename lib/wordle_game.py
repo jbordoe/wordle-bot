@@ -2,6 +2,7 @@ import time
 
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
+from selenium.webdriver.common.by import By
 from selenium.common.exceptions import NoSuchElementException
 from pyshadow.main import Shadow
 from tkinter import Tk
@@ -47,11 +48,12 @@ class WordleGame(GameStateInterface):
         time.sleep(1)
 
         browser.find_element('button#pz-gdpr-btn-closex').click()
-        browser.find_element('game-app').click()
+        self.browser = browser
+        self._find_el_by_class_substr('Modal-module_closeIcon__').click()
         return browser
 
     def _press_key(self, letter):
-        keyboard = self.browser.find_element('#keyboard')
+        keyboard = self._find_el_by_class_substr('Keyboard-module_keyboard')
         key_el = keyboard.find_element('css selector', f'button[data-key="{letter.lower()}"]')
         # TODO: why are clicks spamming 'QA--QAQA True'?
         key_el.click()
@@ -60,14 +62,12 @@ class WordleGame(GameStateInterface):
         for _ in range(5): self._press_key("←")
 
     def _get_result(self):
-        rows = self.browser.find_elements('game-row')
-        current_row = [r for r in rows if r.get_attribute('letters')][-1]
-        tiles = self.browser.find_elements(current_row, 'game-tile')
+        tiles = self._get_last_row()
 
         letter_results = []
         for tile in tiles:
-            evaluation = tile.get_attribute('evaluation')
-            letter = tile.get_attribute('letter').upper()
+            evaluation = tile.get_attribute('data-state')
+            letter = tile.text.upper()
             res = None
             if evaluation == 'correct':
                 res = (letter, self.LETTER_STATE_PLACED)
@@ -90,7 +90,7 @@ class WordleGame(GameStateInterface):
         res_text = self._get_result_text(share_btn) if game_over else None
 
         result = GameGuessResult(
-            current_row.get_attribute('letters'),
+            [t.text.upper() for t in tiles],
             letters=letter_results,
             correct=guess_correct,
             text=res_text
@@ -117,3 +117,19 @@ class WordleGame(GameStateInterface):
         share_btn.click()
         result_str = Tk().clipboard_get()
         return result_str
+
+    def _get_last_row(self):
+        tiles = self._find_els_by_class_substr('Tile-module_tile')
+        rows = [tiles[i:i+5] for i in range(0, len(tiles), 5)]
+
+        valid_states = ['present', 'absent', 'correct']
+        return [r for r in rows if all(t.get_attribute('data-state') in valid_states for t in r)][-1]
+
+    def _find_els_by_class_substr(self, substr, tag='*'):
+        return self.browser.driver.find_elements(
+            by=By.XPATH,
+            value=f'//{tag}[contains(@class, "{substr}")]'
+        )
+    def _find_el_by_class_substr(self, substr, tag='*'):
+        return self._find_els_by_class_substr(substr, tag=tag)[0]
+
