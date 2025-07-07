@@ -17,31 +17,44 @@ class WordIndex(WordSetInterface):
                 ordered_index[i][c] = set()
 
         for w in word_collection:
-            w = w.upper()
-            for c in set(w):
-                unordered_index[c].add(w)
-            for i, c in enumerate(w):
-                ordered_index[i][c].add(w)
+            wup = w.upper()
+            for c in set(wup):
+                unordered_index[c].add(wup)
+            for i, c in enumerate(wup):
+                ordered_index[i][c].add(wup)
 
         self.ordered_index = ordered_index
         self.unordered_index = unordered_index
         self.wordset = set(word_collection)
         self.list = list(word_collection)
 
-    # TODO: add param to filter given words (i.e old guesses)
-    def find_words(
-        self,
-        placed_letters=[],
-        contains=None,
-        filter=set(),
-        excludes=[],
-    ):
+    # note: function documentation below in standard format
+    def find_words(self, placed_letters=[], contains=None, filter=set(), excludes=[]):
+        """
+        Finds words that match the given constraints.
+
+        Parameters:
+        placed_letters (list): List of letters that have already been placed in the word.
+            Unknown letters are represented by falsey values.
+        contains (list): List of letters known to be present in the word, but not necessarily placed.
+        filter (set): Set of letters that must not be present in the word.
+        excludes (list): List of sets of letters that cannot be present in each respective position.
+
+        Returns:
+        list: List of words that match the given constraints.
+        """
         logging.debug(f"""
         placed_letters={placed_letters},
         contains={contains},
         filter={filter},
         excludes={excludes}
         """)
+        # ensure all letters are upper case
+        placed_letters = [l.upper() if l else None for l in placed_letters]
+        contains = [l.upper() for l in contains] if contains else None
+        filter = set([l.upper() for l in filter])
+        excludes = [set([l.upper() for l in group]) for group in excludes]
+
         placed_pairs = [c for c in enumerate(placed_letters) if c[1]]
         placed_set = self._find_in_ordered(placed_pairs)
 
