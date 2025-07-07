@@ -1,3 +1,4 @@
+import logging
 import time
 
 from selenium import webdriver
@@ -86,11 +87,11 @@ class WordleGame(GameStateInterface):
                 self.browser.driver.find_element('id', 'fides-overlay')
             )
         except TimeoutException:
-            print("Cookie dialog did not appear")
+            logging.warning("Cookie dialog did not appear")
         except NoSuchElementException:
-            print("div.fides-overlay not found")
+            logging.warning("div.fides-overlay not found")
         except Exception as e:
-            print(f"An error occurred while handling cookie dialog: {e}")
+            logging.warning(f"An error occurred while handling cookie dialog: {e}")
 
     def _press_key(self, letter):
         keyboard = self._find_el_by_class_substr('Keyboard-module_keyboard')
@@ -116,8 +117,7 @@ class WordleGame(GameStateInterface):
             elif evaluation == 'absent':
                 res = None
             else:
-                # TODO: better logging, ofc
-                print(f'Unsupported evaluation: {evaluation}')
+                logging.error(f'Unsupported evaluation: {evaluation}')
                 return None
 
             letter_results.append(res)
