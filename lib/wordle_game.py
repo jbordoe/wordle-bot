@@ -3,7 +3,9 @@ import time
 from selenium import webdriver
 from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
-from selenium.common.exceptions import NoSuchElementException
+from selenium.webdriver.support import expected_conditions as EC
+from selenium.webdriver.support.ui import WebDriverWait
+from selenium.common.exceptions import NoSuchElementException, TimeoutException
 from pyshadow.main import Shadow
 from tkinter import Tk
 
@@ -40,17 +42,55 @@ class WordleGame(GameStateInterface):
         options.headless = self.headless
 
         driver = webdriver.Firefox(options=options)
-        driver.set_page_load_timeout(10)
+        driver.set_page_load_timeout(15)
 
         browser = Shadow(driver)
+        self.browser = browser
 
         browser.driver.get(self.GAME_URL)
-        time.sleep(1)
 
-        browser.find_element('button#pz-gdpr-btn-closex').click()
-        self.browser = browser
-        self._find_el_by_class_substr('Modal-module_closeIcon__').click()
+        self._handle_cookie_dialog()
+        self._begin_game()
+
+
         return browser
+
+    def _begin_game(self):
+        try:
+            button = WebDriverWait(self.browser.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, "//*[contains(text(), 'Play')]")
+                )
+            )
+            button.click()
+        except (TimeoutException, NoSuchElementException) as e:
+            raise Exception('Game initialization failed: ' + str(e))
+
+        try:
+            close_modal = WebDriverWait(self.browser.driver, 10).until(
+                EC.presence_of_element_located(
+                    (By.XPATH, f'//button[contains(@class, "Modal-module_closeIcon__")]')
+                )
+            )
+            close_modal.click()
+        except (TimeoutException, NoSuchElementException) as e:
+            raise Exception('Game initialization failed: ' + str(e))
+
+    def _handle_cookie_dialog(self):
+        try:
+            WebDriverWait(self.browser.driver, 10).until(
+                EC.presence_of_element_located((By.ID, 'fides-overlay'))
+            )
+            self.browser.driver.execute_script(
+                "arguments[0].remove();",
+                self.browser.driver.find_element_by_id('fides-overlay')
+            )
+        except TimeoutException:
+            print("Cookie dialog did not appear")
+        except NoSuchElementException:
+            print("div.fides-overlay not found")
+        except Exception as e:
+            print(f"An error occurred while handling cookie dialog: {e}")
 
     def _press_key(self, letter):
         keyboard = self._find_el_by_class_substr('Keyboard-module_keyboard')
@@ -131,5 +171,6 @@ class WordleGame(GameStateInterface):
             value=f'//{tag}[contains(@class, "{substr}")]'
         )
     def _find_el_by_class_substr(self, substr, tag='*'):
-        return self._find_els_by_class_substr(substr, tag=tag)[0]
+        els = self._find_els_by_class_substr(substr, tag=tag)
+        return els[0] if els else None
 
