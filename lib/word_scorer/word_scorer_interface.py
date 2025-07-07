@@ -1,4 +1,4 @@
-class RankerInterface:
+class WordScorerInterface:
     AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __init__(self, wordlist):

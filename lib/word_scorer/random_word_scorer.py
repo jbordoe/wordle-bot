@@ -1,8 +1,8 @@
 import random
 
-from lib.ranker_interface import RankerInterface
+from lib.word_scorer.word_scorer_interface import WordScorerInterface
 
-class RandomRanker(RankerInterface):
+class RandomWordScorer(WordScorerInterface):
     AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __init__(self, wordlist):

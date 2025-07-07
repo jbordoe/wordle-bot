@@ -8,9 +8,9 @@ import re
 from lib.player.bot_player import BotPlayer
 from lib.wordle_game import WordleGame
 from lib.absurdle_game import AbsurdleGame
-from lib.words.word_index import WordIndex
+from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_loader import WordLoader
-from lib.stat_ranker import StatRanker
+from lib.words.word_index import WordIndex
 
 WORDLIST_PATH = "dict.json"
 
@@ -42,8 +42,8 @@ VALID_THEMES = list(THEMES.keys()) + ['random', 'shuffle']
 def init_player(state):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
-    ranker = StatRanker(words, b=0.5)
-    player = BotPlayer(state, words=word_index, ranker=ranker)
+    word_scorer = StatisticalWordScorer(words, b=0.5)
+    player = BotPlayer(state, words=word_index, word_scorer=word_scorer)
     return player
 
 def map_result(result, theme):

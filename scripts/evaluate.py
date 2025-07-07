@@ -7,8 +7,8 @@ from termgraph.module import Data, BarChart, Args, Colors
 from lib.dummy_wordle_game import DummyWordleGame
 from lib.player.bot_player import BotPlayer
 from lib.words.word_index import WordIndex
+from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_loader import WordLoader
-from lib.stat_ranker import StatRanker
 
 def go(runs, sample_size):
     wordlen = 5
@@ -17,7 +17,7 @@ def go(runs, sample_size):
     print('running games')
     guesses = {}
     words = WordIndex(word_list)
-    ranker = StatRanker(word_list)
+    ranker = StatisticalWordScorer(word_list)
     with alive_bar(runs, bar='filling', spinner='dots') as bar:
         for i in range(runs):
             n_guesses = game(words, ranker, wordlen=wordlen)

@@ -7,8 +7,8 @@ from lib.dummy_wordle_game import DummyWordleGame
 from lib.game_state_interface import GameStateInterface 
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
+from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_loader import WordLoader
-from lib.stat_ranker import StatRanker
 
 def menu(player_type='human', verbosity=1):
     cprint("Menu:", attrs=['bold', 'underline'])
@@ -38,10 +38,10 @@ def game(words, player_type, wordlen=5, verbosity=1):
     if player_type == 'human':
         player = HumanPlayer()
     else:
-        ranker = StatRanker(words, b=0.7)
+        word_scorer = StatisticalWordScorer(words, b=0.7)
         player = BotPlayer(
             state,
-            ranker=ranker,
+            word_scorer=word_scorer,
             verbosity=verbosity
         )
     print('_' * wordlen)
