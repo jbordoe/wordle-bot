@@ -5,7 +5,7 @@ from selenium.webdriver.firefox.options import Options
 from selenium.webdriver.common.by import By
 from selenium.webdriver.support import expected_conditions as EC
 from selenium.webdriver.support.ui import WebDriverWait
-from selenium.common.exceptions import NoSuchElementException, TimeoutException
+from selenium.common.exceptions import NoSuchElementException, TimeoutException, ElementNotVisibleException
 from pyshadow.main import Shadow
 from tkinter import Tk
 
@@ -83,7 +83,7 @@ class WordleGame(GameStateInterface):
             )
             self.browser.driver.execute_script(
                 "arguments[0].remove();",
-                self.browser.driver.find_element_by_id('fides-overlay')
+                self.browser.driver.find_element('id', 'fides-overlay')
             )
         except TimeoutException:
             print("Cookie dialog did not appear")
@@ -143,14 +143,14 @@ class WordleGame(GameStateInterface):
                 'div#game-toaster[duration="infinity"]'
             )
             return True
-        except NoSuchElementException:
+        except (NoSuchElementException, ElementNotVisibleException):
             return False
 
     def _get_share_btn(self):
         try:
             btn = self.browser.find_element('button#share-button')
             return btn
-        except NoSuchElementException:
+        except (NoSuchElementException, ElementNotVisibleException):
             return None
 
     def _get_result_text(self, share_btn):
