@@ -11,7 +11,7 @@ from pyshadow.main import Shadow
 from tkinter import Tk
 
 from lib.game_guess_result import GameGuessResult
-from lib.game_state_interface import GameStateInterface
+from lib.game.game_state_interface import GameStateInterface
 
 class WordleGame(GameStateInterface):
     GAME_URL = "https://www.nytimes.com/games/wordle/index.html"

@@ -4,7 +4,7 @@ from termcolor import cprint
 from alive_progress import alive_bar
 from termgraph.module import Data, BarChart, Args, Colors
 
-from lib.dummy_wordle_game import DummyWordleGame
+from lib.game.dummy_wordle_game import DummyWordleGame
 from lib.player.bot_player import BotPlayer
 from lib.words.word_index import WordIndex
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer

@@ -1,3 +1,4 @@
 geckodriver.log
 *.cprof
 *.callgrind
+__pycache__

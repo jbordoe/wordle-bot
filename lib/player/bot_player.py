@@ -1,7 +1,7 @@
 import random
 
 from lib.player.player_interface import PlayerInterface
-from lib.game_state_interface import GameStateInterface 
+from lib.game.game_state_interface import GameStateInterface 
 from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
 from lib.word_scorer.random_word_scorer import RandomWordScorer

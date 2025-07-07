@@ -7,7 +7,7 @@ import re
 
 from lib.player.bot_player import BotPlayer
 from lib.wordle_game import WordleGame
-from lib.absurdle_game import AbsurdleGame
+from lib.game.absurdle_game import AbsurdleGame
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_loader import WordLoader
 from lib.words.word_index import WordIndex

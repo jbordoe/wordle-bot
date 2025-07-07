@@ -3,8 +3,8 @@ import sys
 from termcolor import cprint
 from pyfiglet import Figlet
 
-from lib.dummy_wordle_game import DummyWordleGame
-from lib.game_state_interface import GameStateInterface 
+from lib.game.dummy_wordle_game import DummyWordleGame
+from lib.game.game_state_interface import GameStateInterface 
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer

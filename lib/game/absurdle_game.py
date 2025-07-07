@@ -6,7 +6,7 @@ from selenium.common.exceptions import NoSuchElementException
 from pyshadow.main import Shadow
 from tkinter import Tk
 
-from lib.game_state_interface import GameStateInterface
+from lib.game.game_state_interface import GameStateInterface
 from lib.game_guess_result import GameGuessResult
 
 class AbsurdleGame(GameStateInterface):
