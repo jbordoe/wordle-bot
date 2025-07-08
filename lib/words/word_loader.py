@@ -11,5 +11,7 @@ class WordLoader:
         w2 = requests.get(cls.WORDLE_ANSWERS_URL).text.upper().split("\n")
 
         wl = list( set(w1).union(set(w2)) )
+        # Drop any empty strings
+        wl = [w for w in wl if w]
         if sample_size: wl = random.sample(wl, sample_size)
         return wl
