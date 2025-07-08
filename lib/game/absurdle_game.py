@@ -7,7 +7,7 @@ from pyshadow.main import Shadow
 from tkinter import Tk
 
 from lib.game.game_state_interface import GameStateInterface
-from lib.game_guess_result import GameGuessResult
+from lib.game.game_guess_result import GameGuessResult
 
 class AbsurdleGame(GameStateInterface):
     GAME_URL = "https://qntm.org/files/wordle/index.html"

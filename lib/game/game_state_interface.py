@@ -1,5 +1,5 @@
 import random
-from lib.game_guess_result import GameGuessResult
+from lib.game.game_guess_result import GameGuessResult
 
 class GameStateInterface:
     LETTER_STATE_PRESENT = 0

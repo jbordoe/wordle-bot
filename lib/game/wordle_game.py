@@ -10,7 +10,7 @@ from selenium.common.exceptions import NoSuchElementException, TimeoutException,
 from pyshadow.main import Shadow
 from tkinter import Tk
 
-from lib.game_guess_result import GameGuessResult
+from lib.game.game_guess_result import GameGuessResult
 from lib.game.game_state_interface import GameStateInterface
 
 class WordleGame(GameStateInterface):
