@@ -15,6 +15,7 @@ seaborn = "*"
 pyfiglet = "*"
 
 [dev-packages]
+coverage = "*"
 
 [requires]
 python_version = "3.13"

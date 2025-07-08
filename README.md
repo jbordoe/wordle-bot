@@ -67,5 +67,25 @@ python wordle.py
 
 To run the test suite:
 ```bash
-python -m unittest
+python -m unittest discover test
 ```
+
+#### Code Coverage
+
+This project uses `coverage.py` to measure test coverage.
+
+Run the tests and collect coverage data:
+```bash
+pipenv run coverage run -m unittest discover test
+```
+
+View the report in the terminal:
+```bash
+pipenv run coverage report -m
+```
+
+Generate a detailed HTML report:
+```bash
+pipenv run coverage html
+```
+The report will be saved in `htmlcov/index.html`.
