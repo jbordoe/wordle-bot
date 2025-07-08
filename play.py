@@ -1,18 +1,22 @@
 import argparse
 from termcolor import cprint
-import time
 import json
+import logging
+import os
 import random
 import re
+import time
 
 from lib.player.bot_player import BotPlayer
-from lib.wordle_game import WordleGame
+from lib.game.wordle_game import WordleGame
 from lib.game.absurdle_game import AbsurdleGame
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_loader import WordLoader
 from lib.words.word_index import WordIndex
 
 WORDLIST_PATH = "dict.json"
+
+logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
 
 THEMES = {
     'default': {'absent': '⬛', 'present': '🟨', 'placed': '🟩', 'dark': True},
