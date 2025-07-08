@@ -1,12 +1,25 @@
-# wordle-bot
+# Wordle Bot
 
 ![](https://github.com/jbordoe/wordle-bot/blob/main/docs/wordlebot_50.png?raw=true)
 
-A bot that plays [wordle](https://www.powerlanguage.co.uk/wordle/)
+A bot that plays [Wordle](https://www.powerlanguage.co.uk/wordle/)
 
-## Setup
+## Features
 
-This project uses [pipenv](https://pipenv.pypa.io/en/latest/)
+*   **Multiple Game Modes**: Supports [Wordle](https://www.powerlanguage.co.uk/wordle/) as well as the more challenging [Absurdle](https://qntm.org/wordle).
+*   **Configurable Bot Strategy**: The bot's guessing strategy can be swapped out. Currently includes:
+    *   A statistical ranker that uses letter frequency to make guesses.
+    *   A random ranker for baseline comparisons.
+*   **In-Browser Automation**: The bot can play the game directly in a web browser.
+*   **Headless Mode**
+*   **Command-Line Interface**: An interactive command-line version of Wordle.
+*   **Performance Evaluation**: Scripts are provided to run the bot through thousands of games and generate performance statistics and visualizations.
+
+## Getting Started
+
+This project uses [pipenv](https://pipenv.pypa.io/en/latest/) for dependency management.
+
+### 1. Setup
 
 Install Python packages:
 
@@ -14,43 +27,45 @@ Install Python packages:
 pipenv install
 ```
 
-Ensure geckodriver is installed
+Next, ensure that [`geckodriver`](https://github.com/mozilla/geckodriver) is installed and available in your system's PATH.
 
-Initialize virtual Python env:
+Finally, initialize virtual Python env:
 
 ```bash
 pipenv shell
 ```
 
-## Running
+### 2. Running the Bot
 
-### In-browser play
+#### In-Browser Play
 
-Have the bot play a game of wordle in a browser
+Have the bot play a game of Wordle in a browser:
 ```bash
-python play.py -v wordle
+python play.py --variant wordle
 ```
 
-Play wordle in a browser, with `salet` and `unfit` as the first guesses 
+Play Wordle in a browser, with `SALET` and `UNFIT` as the first guesses:
 ```bash
-python play.py -v wordle -g salet,unfit
+python play.py --variant wordle --guesses SALET,UNFIT
 ```
 
-Have the bot play a game of [absurdle](https://qntm.org/wordle) in a headless browser
+Have the bot play a game of [Absurdle](https://qntm.org/wordle) in a headless browser:
 ```bash
-python play.py -v absurdle --headless
+python play.py --variant absurdle --headless
 ```
 
-use `--help` for more information
+Use `--help` for more information.
 
-### Command-line game
+#### Command-Line Game
+
+To play a game of Wordle on the command line yourself:
 ```bash
 python wordle.py
 ```
 
-## Tests
+### 3. Running Tests
+
+To run the test suite:
 ```bash
 python -m unittest
 ```
-
-Test
