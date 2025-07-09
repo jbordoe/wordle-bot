@@ -6,6 +6,7 @@ import re
 import time
 
 from lib.player.bot_player import BotPlayer
+from lib.player.llm_player import LLMPlayer
 from lib.game.wordle_game import WordleGame
 from lib.game.absurdle_game import AbsurdleGame
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
@@ -37,11 +38,17 @@ THEMES = {
 }
 VALID_THEMES = list(THEMES.keys()) + ['random', 'shuffle']
 
-def init_player(state):
+def init_player(state, play_with_llm=False):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
     word_scorer = StatisticalWordScorer(words, b=0.5)
-    player = BotPlayer(state, words=word_index, word_scorer=word_scorer)
+
+    if play_with_llm:
+        logging.info("initializing LLM player...")
+        return LLMPlayer(state, words=word_index, word_scorer=word_scorer)
+    else:
+        logging.info("initializing Bot player...")
+        return BotPlayer(state, words=word_index, word_scorer=word_scorer)
     return player
 
 def map_result(result, theme):
@@ -65,13 +72,19 @@ def map_result(result, theme):
     return result
 
 
-def go(variant='wordle', headless=False, theme='default', initial_guesses=[]):
+def go(
+    variant='wordle',
+    headless=False,
+    theme='default',
+    initial_guesses=[],
+    play_with_llm=False
+):
     state = None
     try:
         logging.info("Visiting game site.")
         game_class = WordleGame if variant == 'wordle' else AbsurdleGame
         state = game_class(headless=headless)
-        player = init_player(state)
+        player = init_player(state, play_with_llm=play_with_llm)
 
         result = None
         n_guesses = 0
@@ -119,6 +132,7 @@ def go(variant='wordle', headless=False, theme='default', initial_guesses=[]):
 parser=argparse.ArgumentParser(description='Have a bot play wordle (or a variant) in the browser')
 parser.add_argument(
     '--headless', action='store_true', help='Run with a visible browser')
+parser.add_argument('--llm', action='store_true', help='Use the Gemini LLM to generate guesses')
 parser.add_argument(
     '-v', '--variant', type=str, required=False, default='wordle', help='Number of games to run')
 parser.add_argument(
@@ -153,5 +167,6 @@ go(
     variant=variant,
     headless=args.headless,
     initial_guesses=initial_guesses,
-    theme=args.theme
+    theme=args.theme,
+    play_with_llm=args.llm
 )

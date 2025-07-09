@@ -7,7 +7,7 @@ from lib.words.word_index import WordIndex
 from lib.word_scorer.random_word_scorer import RandomWordScorer
 
 class BotPlayer(PlayerInterface):
-    def __init__(self, game_state, words=None, word_scorer=None, verbosity=0):
+    def __init__(self, game_state, words=None, word_scorer=None):
         self.placed = ['' for _ in range(game_state.word_length)]
         self.present = set()
         self.guessed = set()
@@ -15,7 +15,6 @@ class BotPlayer(PlayerInterface):
         self.excludes = [set() for _ in range(game_state.word_length)]
         self.words = words or SimpleWordList(game_state.wordlist)
         self.word_scorer = word_scorer or RandomWordScorer(game_state.wordlist)
-        self.verbosity = verbosity
 
     def guess(self, game_state, prev=None) -> str:
         placed_str = ''.join(self.placed)
