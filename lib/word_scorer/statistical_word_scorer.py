@@ -28,7 +28,7 @@ class StatisticalWordScorer(WordScorerInterface):
         freq = dict([(c, 0) for c in self.AZ])
 
         for w in self.wordlist:
-            for i, l in enumerate(w):
+            for i, l in enumerate(w.upper()):
                 freq[l] += 1
 
         n = len(self.wordlist)
@@ -39,7 +39,7 @@ class StatisticalWordScorer(WordScorerInterface):
             freq[c] /= n
 
         for w in self.wordlist:
-            score = sum([freq[l] for l in set(w)])
+            score = sum([freq[l] for l in set(w.upper())])
             scores[w] = score
 
         return scores

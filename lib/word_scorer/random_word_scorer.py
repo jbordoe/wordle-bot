@@ -9,8 +9,7 @@ class RandomWordScorer(WordScorerInterface):
         self.wordlist = list(wordlist)
 
     def rank(self, words):
-        w = list(words)
-        return random.sample(w, 1) + w
+        return sorted(list(words))
 
     def update(self, wordlist):
         self.wordlist = list(wordlist)
