@@ -1,6 +1,6 @@
 class PlayerInterface:
     def guess(self, game_state, prev=None) -> str:
-        pass
+        raise NotImplementedError
 
     def update_state(self, result) -> None:
-        pass
+        raise NotImplementedError

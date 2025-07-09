@@ -1,7 +1,7 @@
-import random
+import logging
 
 from lib.player.player_interface import PlayerInterface
-from lib.game.game_state_interface import GameStateInterface 
+from lib.game.game_state_interface import GameStateInterface
 from lib.words.simple_word_list import SimpleWordList
 from lib.words.word_index import WordIndex
 from lib.word_scorer.random_word_scorer import RandomWordScorer
@@ -30,14 +30,13 @@ class BotPlayer(PlayerInterface):
         )
 
         if not candidates:
-            # TODO: throw a proper exception here
-            print("WTF, no candidates available!")
+            raise Exception("No candidates available!")
         else:
             candidates = list(set(candidates).difference(self.guessed))
             guess = self.word_scorer.rank(candidates)[0]
+            logging.debug(f"guess = {guess}")
+
             self.guessed.add(guess)
-            if self.verbosity:
-                print(f"guess = {guess}")
             return guess
 
     def update_state(self, result) -> None:
