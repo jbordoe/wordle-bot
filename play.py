@@ -1,8 +1,6 @@
 import argparse
-from termcolor import cprint
-import json
+from termcolor import cprint, colored
 import logging
-import os
 import random
 import re
 import time
@@ -13,10 +11,6 @@ from lib.game.absurdle_game import AbsurdleGame
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_loader import WordLoader
 from lib.words.word_index import WordIndex
-
-WORDLIST_PATH = "dict.json"
-
-logging.basicConfig(level=os.environ.get("LOG_LEVEL", "INFO"))
 
 THEMES = {
     'default': {'absent': '⬛', 'present': '🟨', 'placed': '🟩', 'dark': True},
@@ -74,7 +68,7 @@ def map_result(result, theme):
 def go(variant='wordle', headless=False, theme='default', initial_guesses=[]):
     state = None
     try:
-        cprint("Visiting game site.", attrs=['dark'])
+        logging.info("Visiting game site.")
         game_class = WordleGame if variant == 'wordle' else AbsurdleGame
         state = game_class(headless=headless)
         player = init_player(state)
@@ -83,7 +77,7 @@ def go(variant='wordle', headless=False, theme='default', initial_guesses=[]):
         n_guesses = 0
 
         while True:
-            cprint('Selecting a word...', attrs=['dark'])
+            logging.info('Selecting a word...')
             if initial_guesses:
                 guess = initial_guesses.pop(0)
             else:
@@ -91,30 +85,31 @@ def go(variant='wordle', headless=False, theme='default', initial_guesses=[]):
 
             if not guess:
                 print(result.letters)
-                raise Exception("Could not find a word!", 'red')
+                raise Exception("Could not find a word!")
 
-            cprint(f'Guess #{n_guesses+1} is {guess}', 'cyan', attrs=['bold'])
+            guess_for_print = colored(guess, 'yellow', attrs=['bold', 'underline'])
+            logging.info(f'Guess #{n_guesses+1} is {guess_for_print}')
 
-            cprint("Checking results...", attrs=['dark'])
+            logging.info("Checking results...")
             result = state.update(guess)
 
             if not result:
-                cprint("Guess was invalid, trying something else", 'yellow')
+                logging.warning("Guess was invalid, trying something else")
             else:
                 n_guesses += 1
                 if result.correct:
-                    cprint("Solution found!", 'green')
+                    logging.info("Solution found!")
                     print(map_result(result.text, theme))
                     if not headless:
-                        print("Closing browser in 30 seconds")
+                        logging.info("Closing browser in 30 seconds")
                         time.sleep(30)
                     break
                 else:
-                    cprint("Updating...", attrs=['dark'])
+                    logging.info("Updating...")
                     player.update_state(result)
 
             if state.max_guesses and n_guesses >= state.max_guesses:
-                cprint("Could not find the solution!", 'red')
+                logging.error("Could not find the solution!")
                 print(result.text)
                 break
     finally:
