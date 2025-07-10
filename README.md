@@ -2,18 +2,25 @@
 
 ![](https://github.com/jbordoe/wordle-bot/blob/main/docs/wordlebot_50.png?raw=true)
 
-A bot that plays [Wordle](https://www.nytimes.com/games/wordle/index.html)
+A bot that plays Wordle.
+
+[![CI Status](https://github.com/jbordoe/wordle-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/jbordoe/wordle-bot/actions/workflows/ci.yml)
+[![Code Coverage](https://img.shields.io/badge/coverage-N%25-orange)](https://github.com/jbordoe/wordle-bot/htmlcov/index.html)
+[![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
+
+
+Designed to play Wordle and its variants, featuring multiple player types including human, statistical bot, and LLM-powered AI, with both command-line and in-browser play.
 
 ## Features
 
-*   **Multiple Game Modes**: Supports [Wordle](https://www.powerlanguage.co.uk/wordle/) as well as the more challenging [Absurdle](https://qntm.org/wordle).
-*   **Configurable Bot Strategy**: The bot's guessing strategy can be swapped out. Currently includes:
-    *   A statistical ranker that uses letter frequency to make guesses.
-    *   A random ranker for baseline comparisons.
-*   **In-Browser Automation**: The bot can play the game directly in a web browser.
-*   **Headless Mode**
-*   **Command-Line Interface**: An interactive command-line version of Wordle.
-*   **Performance Evaluation**: Scripts are provided to run the bot through thousands of games and generate performance statistics and visualizations.
+*   **Multiple Game Modes**: Supports the classic [Wordle](https://www.nytimes.com/games/wordle/index.html) and the more challenging [Absurdle](https://qntm.org/wordle).
+*   **Player Types**:
+    *   **Human Player**: Interactive command-line interface for manual play.
+    *   **Statistical Bot**: An AI player that uses letter frequency analysis and statistical methods to make optimal guesses.
+    *   **LLM Player**: Uses an LLM to generate intelligent guesses.
+*   **In-Browser Automation**: Can simulate human interaction in a web browser.
+*   **Headless Browser Support**: Run browser-based games in the background.
+*   **Performance Evaluation**: Includes scripts to run extensive game simulations and generate performance statistics and visualizations for analysis.
 
 ## Getting Started
 
@@ -69,6 +76,10 @@ python main.py --player human
 ```
 
 Use `--help` for more information on all available options.
+
+## License
+
+This project is licensed under the MIT License - see the [LICENSE](LICENSE) file for details.
 
 ### 3. Running Tests
 
