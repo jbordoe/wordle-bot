@@ -5,7 +5,7 @@
 A bot that plays Wordle.
 
 [![CI Status](https://github.com/jbordoe/wordle-bot/actions/workflows/ci.yml/badge.svg)](https://github.com/jbordoe/wordle-bot/actions/workflows/ci.yml)
-[![Code Coverage](https://img.shields.io/badge/coverage-N%25-orange)](https://github.com/jbordoe/wordle-bot/htmlcov/index.html)
+[![Code Coverage](https://coveralls.io/repos/github/jbordoe/wordle-bot/badge.svg)](https://coveralls.io/github/jbordoe/wordle-bot)
 [![License: MIT](https://img.shields.io/badge/License-MIT-yellow.svg)](https://opensource.org/licenses/MIT)
 
 

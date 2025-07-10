@@ -20,8 +20,14 @@ jobs:
     - name: Install pipenv
       run: pip install pipenv
     - name: Install dependencies
-      run: pipenv install --dev
-    - name: Run tests
-      run: pipenv run python -m unittest discover test
+      run: pipenv install --dev coveralls
+    - name: Run tests and generate coverage report
+      run: |
+        pipenv run coverage run -m unittest discover test
+        pipenv run coverage xml
+    - name: Upload coverage to Coveralls
+      env:
+        COVERALLS_REPO_TOKEN: ${{ secrets.COVERALLS_REPO_TOKEN }}
+      run: pipenv run coveralls
     - name: Run linting
       run: pipenv run ruff check .

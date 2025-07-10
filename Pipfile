@@ -19,6 +19,7 @@ google-generativeai = "*"
 [dev-packages]
 coverage = "*"
 ruff = "*"
+coveralls = "*"
 
 [requires]
 python_version = "3.13"
