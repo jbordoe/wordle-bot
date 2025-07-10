@@ -3,7 +3,7 @@ import os
 import google.generativeai as genai
 
 from lib.player.player_interface import PlayerInterface
-from lib.game.game_state_interface import GameStateInterface
+from lib.game.game_interface import GameInterface
 
 class LLMPlayer(PlayerInterface):
     """
@@ -48,11 +48,11 @@ class LLMPlayer(PlayerInterface):
                 if not guess[i] in seen: self.filter.add(guess[i])
                 continue
             l, l_state = pair
-            if l_state == GameStateInterface.LETTER_STATE_PRESENT:
+            if l_state == GameInterface.LETTER_STATE_PRESENT:
                 self.excludes[i].add(l)
                 self.present.add(l)
                 self.filter.discard(l)
-            elif l_state == GameStateInterface.LETTER_STATE_PLACED:
+            elif l_state == GameInterface.LETTER_STATE_PLACED:
                 self.placed[i] = l
                 # TODO: how do we account for the possibility
                 # that a placed letter occurs again?

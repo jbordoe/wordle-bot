@@ -1,7 +1,7 @@
 import unittest
 from unittest.mock import patch, Mock
 from lib.player.bot_player import BotPlayer
-from lib.game.game_state_interface import GameStateInterface
+from lib.game.game_interface import GameInterface
 
 class TestBotPlayer(unittest.TestCase):
 
@@ -53,7 +53,7 @@ class TestBotPlayer(unittest.TestCase):
         player = BotPlayer(self.game_state)
         result = Mock(
             guess="APPLE",
-            letters=[(l, GameStateInterface.LETTER_STATE_PLACED) for l in "APPLE"]
+            letters=[(l, GameInterface.LETTER_STATE_PLACED) for l in "APPLE"]
         )
         player.update_state(result)
         guess = player.guess(self.game_state)
@@ -66,8 +66,8 @@ class TestBotPlayer(unittest.TestCase):
         result = Mock(
             guess="HAPPY",
             letters=[
-                ("H", GameStateInterface.LETTER_STATE_PLACED),
-                ("A", GameStateInterface.LETTER_STATE_PRESENT),
+                ("H", GameInterface.LETTER_STATE_PLACED),
+                ("A", GameInterface.LETTER_STATE_PRESENT),
                 None,
                 None,
                 None

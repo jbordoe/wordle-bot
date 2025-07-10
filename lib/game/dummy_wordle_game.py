@@ -1,8 +1,8 @@
 import random
 from lib.game_guess_result import GameGuessResult
-from lib.game.game_state_interface import GameStateInterface
+from lib.game.game_interface import GameInterface
 
-class DummyWordleGame(GameStateInterface):
+class DummyWordleGame(GameInterface):
     def __init__(self, wordlist=None):
         self.wordlist = wordlist
         self.word_length = len(wordlist[0])

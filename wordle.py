@@ -4,7 +4,7 @@ from termcolor import cprint
 from pyfiglet import Figlet
 
 from lib.game.dummy_wordle_game import DummyWordleGame
-from lib.game.game_state_interface import GameStateInterface 
+from lib.game.game_interface import GameInterface 
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
@@ -52,9 +52,9 @@ def game(words, player_type, wordlen=5, verbosity=1):
         result = state.update(guess)
         for i, pair in enumerate(result.letters):
             letter, letter_state = pair if pair else (None, None)
-            if letter_state == GameStateInterface.LETTER_STATE_PLACED:
+            if letter_state == GameInterface.LETTER_STATE_PLACED:
                 cprint(letter, 'white', 'on_green', end='', attrs=['bold'])
-            elif letter_state == GameStateInterface.LETTER_STATE_PRESENT:
+            elif letter_state == GameInterface.LETTER_STATE_PRESENT:
                 cprint(letter, 'white', 'on_yellow', end='', attrs=['bold'])
             else:
                 cprint(guess[i], end='')

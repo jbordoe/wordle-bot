@@ -6,7 +6,7 @@ class GameGuessResult:
             Parameters:
                 guess (str): The guessed word
                 letters (list): A list of tuples of the form (letter, state)
-                    where state corresponds to one of the GameStateInterface constants
+                    where state corresponds to one of the GameInterface constants
                 correct (bool): Whether the guess was correct
                 text (str): Any additional text to display
         """

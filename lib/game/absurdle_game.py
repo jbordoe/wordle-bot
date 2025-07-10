@@ -6,10 +6,10 @@ from selenium.common.exceptions import NoSuchElementException
 from pyshadow.main import Shadow
 from tkinter import Tk
 
-from lib.game.game_state_interface import GameStateInterface
+from lib.game.game_interface import GameInterface
 from lib.game.game_guess_result import GameGuessResult
 
-class AbsurdleGame(GameStateInterface):
+class AbsurdleGame(GameInterface):
     GAME_URL = "https://qntm.org/files/wordle/index.html"
 
     def __init__(self, headless=True):

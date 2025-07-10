@@ -1,15 +1,18 @@
 import random
 from lib.game.game_guess_result import GameGuessResult
 
-class GameStateInterface:
+class GameInterface:
     LETTER_STATE_PRESENT = 0
     LETTER_STATE_PLACED = 1
 
     def __init__(self):
-        pass
+        raise NotImplementedError
 
     def update(self, guess) -> GameGuessResult:
-        pass
+        raise NotImplementedError
+
+    def undo(self):
+        raise NotImplementedError
 
     def quit(self):
-        pass
+        raise NotImplementedError

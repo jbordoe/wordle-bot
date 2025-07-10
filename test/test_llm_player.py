@@ -5,7 +5,7 @@ from unittest.mock import patch, MagicMock
 mock_genai = MagicMock()
 with patch.dict('sys.modules', {'google.generativeai': mock_genai}):
     from lib.player.llm_player import LLMPlayer
-    from lib.game.game_state_interface import GameStateInterface
+    from lib.game.game_interface import GameInterface
 
 class TestLLMPlayer(unittest.TestCase):
 
@@ -44,10 +44,10 @@ class TestLLMPlayer(unittest.TestCase):
         mock_result.guess = "RAISE"
         mock_result.letters = [
             None,
-            ('A', GameStateInterface.LETTER_STATE_PLACED),
-            ('I', GameStateInterface.LETTER_STATE_PRESENT),
+            ('A', GameInterface.LETTER_STATE_PLACED),
+            ('I', GameInterface.LETTER_STATE_PRESENT),
             None,
-            ('E', GameStateInterface.LETTER_STATE_PLACED)
+            ('E', GameInterface.LETTER_STATE_PLACED)
         ]
 
         self.player.update_state(mock_result)
