@@ -7,7 +7,7 @@ indent-width = 4
 exclude = ["notebooks"]
 
 # Assume Python 3.9
-target-version = "py39"
+target-version = "py313"
 
 [tool.ruff.lint]
 # Enable Pyflakes, pycodestyle, and isort rules.
