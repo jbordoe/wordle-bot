@@ -4,13 +4,15 @@ from termcolor import cprint
 from pyfiglet import Figlet
 
 from lib.game.dummy_wordle_game import DummyWordleGame
-from lib.game.game_interface import GameInterface 
+from lib.game.game_interface import GameInterface
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
+from lib.player.llm_player import LLMPlayer
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
+from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
 
-def menu(player_type='human', verbosity=1):
+def menu(player_type='human'):
     cprint("Menu:", attrs=['bold', 'underline'])
     while True:
         print("""
@@ -21,8 +23,7 @@ def menu(player_type='human', verbosity=1):
         words = None
         if choice == "1":
             sys.stdout.write("\033[F")
-            words = WordLoader.load_wordlist() if not words else words
-            game(words, player_type, verbosity=verbosity)
+            game(player_type)
         elif choice == "2":
             sys.stdout.write("\033[F")
             print("Bye!")
@@ -32,18 +33,23 @@ def menu(player_type='human', verbosity=1):
             print("Unrecognized input")
 
 
-def game(words, player_type, wordlen=5, verbosity=1):
-    state = DummyWordleGame(words)
+def game(player_type, wordlen=5):
+    words = WordLoader.load_wordlist()
+    word_index = WordIndex(words)
+
     player = None
+    state = DummyWordleGame(words)
+
     if player_type == 'human':
         player = HumanPlayer()
-    else:
+    elif player_type == 'bot':
         word_scorer = StatisticalWordScorer(words, b=0.7)
-        player = BotPlayer(
-            state,
-            word_scorer=word_scorer,
-            verbosity=verbosity
-        )
+        player = BotPlayer(state, words=word_index, word_scorer=word_scorer)
+    elif player_type == 'llm':
+        player = LLMPlayer(state, words=word_index)
+    else:
+        raise Exception(f"Invalid player type: {player_type}")
+
     print('_' * wordlen)
 
     result = None
@@ -71,17 +77,12 @@ cprint("\n" + f.renderText('Wordle'), 'cyan')
 
 parser=argparse.ArgumentParser(description='Play wordle on the command line.')
 parser.add_argument(
-    '-p', '--player', type=str, required=False, default='human', help='Type of player (human or bot)')
+    '-p', '--player', type=str, required=False, default='human', help='Type of player (human, bot, or llm)')
 
-parser.add_argument(
-    '-v', '--verbosity', type=int, required=False, default=1, help='How much text to output')
 args = parser.parse_args()
 
 player = 'human'
-if args.player not in ('human', 'bot'):
-    raise Exception(f"Invalid player {player}")
+if args.player not in ('human', 'bot', 'llm'):
+    raise Exception(f"Invalid player {args.player}")
 
-menu(
-    player_type=args.player,
-    verbosity=args.verbosity
-)
+menu(player_type=args.player)

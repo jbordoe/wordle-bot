@@ -45,7 +45,7 @@ def init_player(state, play_with_llm=False):
 
     if play_with_llm:
         logging.info("initializing LLM player...")
-        return LLMPlayer(state, words=word_index, word_scorer=word_scorer)
+        return LLMPlayer(state, words=word_index)
     else:
         logging.info("initializing Bot player...")
         return BotPlayer(state, words=word_index, word_scorer=word_scorer)
