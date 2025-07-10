@@ -78,27 +78,37 @@ class LLMPlayer(PlayerInterface):
             return None
 
     def _generate_prompt(self, game_state, prev=None) -> str:
-        placed_str = ' '.join([l if l else '?' for l in self.placed])
+        placed_str = ''.join([l if l else '?' for l in self.placed])
         absent_str = ', '.join(sorted(list(self.filter)))
         present_str = ', '.join(sorted(list(self.present)))
         excluded_str = self._generate_excludes_str()
-        
+
         prompt = f"""
-You are an expert Wordle player. Your task is to guess a valid English word of exactly {game_state.word_length} letters based on the game state.
+WORDLE CONSTRAINT SOLVER - {game_state.word_length} letters
 
-Current State:
-- Placed (correct letter, correct position): {placed_str}
-- Present (correct letter, wrong position): {present_str}
-- Absent (wrong letter): {absent_str}
-- Excluded by position (letters that are present but not in this spot): 
-{excluded_str}
+## FIXED PATTERN: {placed_str}
+## MUST INCLUDE (different positions): {present_str}
+## FORBIDDEN LETTERS: {absent_str}
+## POSITION BLOCKS: {excluded_str}
 
-Based on this information, provide the best possible guess.
-The word must be a valid English word and conform to all the rules.
-Pay particular attention to the correct position of the letters, and letters we have ALREADY PLACED.
+INSTRUCTION: Complete the pattern {placed_str} by filling in the ? positions.
 
-Return ONLY the guessed word, with NO other text or explanation.
+RULES:
+1. Letters marked as specific letters (not ?) cannot be changed
+2. Include all present letters in different positions than where they were found
+3. Never use forbidden letters
+4. Result must be a real English word
+
+PROCESS:
+- Take the pattern: {placed_str}
+- Replace each ? with a valid letter
+- Verify all constraints satisfied
+- Choose the most common English word that fits
+
+OUTPUT: Complete {game_state.word_length}-letter word in UPPERCASE only.
+    NEVER INCLUDE ANY OTHER TEXT OR EXPLANATION.
 """
+
         return prompt
 
     def _generate_excludes_str(self):
