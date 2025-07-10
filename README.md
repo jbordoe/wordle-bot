@@ -2,7 +2,7 @@
 
 ![](https://github.com/jbordoe/wordle-bot/blob/main/docs/wordlebot_50.png?raw=true)
 
-A bot that plays [Wordle](https://www.powerlanguage.co.uk/wordle/)
+A bot that plays [Wordle](https://www.nytimes.com/games/wordle/index.html)
 
 ## Features
 
