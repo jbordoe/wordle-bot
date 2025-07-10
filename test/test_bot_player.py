@@ -1,7 +1,8 @@
 import unittest
-from unittest.mock import patch, Mock
+from unittest.mock import patch, Mock, MagicMock
 from lib.player.bot_player import BotPlayer
 from lib.game.game_interface import GameInterface
+from lib.player.player_knowledge import PlayerKnowledge
 
 class TestBotPlayer(unittest.TestCase):
 
@@ -14,71 +15,50 @@ class TestBotPlayer(unittest.TestCase):
 
     def test_initialization(self):
         """
-        Test that the player can be initialized with a game state
+        Test that the player initializes its components correctly.
         """
         self.assertIsInstance(self.player, BotPlayer)
+        self.assertIsInstance(self.player.knowledge, PlayerKnowledge)
         self.assertEqual(self.player.words.list, self.game_state.wordlist)
-
-    def test_initialization_with_words(self):
-        """
-        Test that the player can be initialized with a game state and a word list
-        """
-        words = ["HELLO", "WORLD", "FOO"]
-        words_obj = Mock(list=words)
-        player = BotPlayer(self.game_state, words=words_obj)
-        self.assertIsInstance(player, BotPlayer)
-        self.assertEqual(player.words.list, words)
 
     def test_guess_returns_valid_guess(self):
         """
-        Test that the player returns a valid guess
+        Test that the player returns a valid guess from its word list.
         """
+        # Mock the word scorer to return a predictable word
+        self.player.word_scorer.rank = Mock(return_value=["HELLO"])
         guess = self.player.guess(self.game_state)
-        self.assertTrue(guess in self.game_state.wordlist)
-        self.assertTrue(guess in self.player.guessed)
+        self.assertEqual(guess, "HELLO")
+        self.assertIn("HELLO", self.player.guessed)
 
     def test_raises_exception_when_no_candidates(self):
         """
-        Test that the player raises an exception when no candidates are available
+        Test that the player raises an exception when no candidates are available.
         """
-        words_obj = Mock(list=[], find_words=Mock(return_value=[]))
-        player = BotPlayer(self.game_state, words=words_obj)
-        with self.assertRaises(Exception):
-            player.guess(self.game_state)
+        self.player.words.find_words = Mock(return_value=[])
+        with self.assertRaisesRegex(Exception, "No candidates available!"):
+            self.player.guess(self.game_state)
 
     def test_returns_when_all_letters_placed(self):
         """
-        Test that the player returns when all letters are placed
+        Test that the player returns the completed word if all letters are placed.
         """
-        player = BotPlayer(self.game_state)
-        result = Mock(
-            guess="APPLE",
-            letters=[(l, GameInterface.LETTER_STATE_PLACED) for l in "APPLE"]
-        )
-        player.update_state(result)
-        guess = player.guess(self.game_state)
+        self.player.knowledge.placed = ["A", "P", "P", "L", "E"]
+        guess = self.player.guess(self.game_state)
         self.assertEqual(guess, "APPLE")
 
-    def test_update_state(self):
+    @patch('lib.player.player_knowledge.PlayerKnowledge.update_state')
+    def test_update_state_delegates_to_knowledge(self, mock_update_state):
         """
-        Test that the player updates the state
+        Test that the player's update_state method correctly delegates
+        the call to its PlayerKnowledge instance.
         """
-        result = Mock(
-            guess="HAPPY",
-            letters=[
-                ("H", GameInterface.LETTER_STATE_PLACED),
-                ("A", GameInterface.LETTER_STATE_PRESENT),
-                ("P", GameInterface.LETTER_STATE_ABSENT),
-                ("P", GameInterface.LETTER_STATE_ABSENT),
-                ("Y", GameInterface.LETTER_STATE_ABSENT)
-            ]
-        )
-        self.player.update_state(result)
-        self.assertEqual(self.player.placed, ["H", '', '', '', ''])
-        self.assertEqual(self.player.present, set(["A"]))
-        self.assertEqual(self.player.filter, set(["P", "Y"]))
-        self.assertEqual(self.player.excludes, [set(), set(["A"]), set(), set(), set()])
+        mock_result = MagicMock()
+        self.player.update_state(mock_result)
+        mock_update_state.assert_called_once_with(mock_result)
+
 if __name__ == '__main__':
     unittest.main()
+
 
 

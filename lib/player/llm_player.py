@@ -3,7 +3,7 @@ import os
 import google.generativeai as genai
 
 from lib.player.player_interface import PlayerInterface
-from lib.game.game_interface import GameInterface
+from lib.player.player_knowledge import PlayerKnowledge
 
 class LLMPlayer(PlayerInterface):
     """
@@ -11,11 +11,8 @@ class LLMPlayer(PlayerInterface):
     """
 
     def __init__(self, game_state, words=None, word_scorer=None):
-        self.placed = ['' for _ in range(game_state.word_length)]
-        self.present = set()
+        self.knowledge = PlayerKnowledge(game_state.word_length)
         self.guessed = set()
-        self.filter = set()
-        self.excludes = [set() for _ in range(game_state.word_length)]
         
         # Configure the Gemini API
         api_key = os.environ.get("GEMINI_API_KEY")
@@ -26,7 +23,7 @@ class LLMPlayer(PlayerInterface):
 
 
     def guess(self, game_state, prev=None) -> str:
-        placed_str = ''.join(self.placed)
+        placed_str = ''.join(l if l else '' for l in self.knowledge.placed)
         if len(placed_str) == game_state.word_length:
             return placed_str
 
@@ -40,25 +37,7 @@ class LLMPlayer(PlayerInterface):
             return guess
 
     def update_state(self, result) -> None:
-        letters = result.letters
-        guess = result.guess
-        seen = set()
-        for i, pair in enumerate(letters):
-            l, l_state = pair
-            if l_state == GameInterface.LETTER_STATE_ABSENT and not l in seen:
-                self.filter.add(l)
-                continue
-            elif l_state == GameInterface.LETTER_STATE_PRESENT:
-                self.excludes[i].add(l)
-                self.present.add(l)
-                self.filter.discard(l)
-            elif l_state == GameInterface.LETTER_STATE_PLACED:
-                self.placed[i] = l
-                # TODO: how do we account for the possibility
-                # that a placed letter occurs again?
-                self.filter.discard(l)
-                self.present.discard(l)
-            seen.add(guess[i])
+        self.knowledge.update_state(result)
 
     def _generate_guess(self, game_state):
         prompt = self._generate_prompt(game_state)
@@ -78,9 +57,9 @@ class LLMPlayer(PlayerInterface):
             return None
 
     def _generate_prompt(self, game_state, prev=None) -> str:
-        placed_str = ''.join([l if l else '?' for l in self.placed])
-        absent_str = ', '.join(sorted(list(self.filter)))
-        present_str = ', '.join(sorted(list(self.present)))
+        placed_str = ''.join([l if l else '?' for l in self.knowledge.placed])
+        absent_str = ', '.join(sorted(list(self.knowledge.filter)))
+        present_str = ', '.join(sorted(list(self.knowledge.present)))
         excluded_str = self._generate_excludes_str()
 
         prompt = f"""
@@ -113,7 +92,7 @@ OUTPUT: Complete {game_state.word_length}-letter word in UPPERCASE only.
 
     def _generate_excludes_str(self):
         excludes_str = ""
-        for i, letters in enumerate(self.excludes):
+        for i, letters in enumerate(self.knowledge.excludes):
             if letters:
                 excludes_str += f"  - Position {i+1} cannot be: {', '.join(sorted(list(letters)))}\n"
         return excludes_str if excludes_str else "  - None\n"
