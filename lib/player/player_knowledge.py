@@ -26,9 +26,10 @@ class PlayerKnowledge:
         seen = set()
         for i, pair in enumerate(letters):
             letter, l_state = pair
-            if l_state == GameInterface.LETTER_STATE_ABSENT and letter not in seen:
-                # If the letter is not present, it can't be placed.
-                self.filter.add(letter)
+            if l_state == GameInterface.LETTER_STATE_ABSENT:
+                if letter not in seen:
+                    # If the letter is not present, it can't be placed.
+                    self.filter.add(letter)
                 continue
             if l_state == GameInterface.LETTER_STATE_PRESENT:
                 self.excludes[i].add(letter)  # We know this letter isn't placed here

@@ -4,11 +4,15 @@ import random
 import re
 import time
 
-from termcolor import colored
+from pyfiglet import Figlet
+from termcolor import colored, cprint
 
 from lib.game.absurdle_game import AbsurdleGame
+from lib.game.dummy_wordle_game import DummyWordleGame
+from lib.game.game_interface import GameInterface
 from lib.game.wordle_game import WordleGame
 from lib.player.bot_player import BotPlayer
+from lib.player.human_player import HumanPlayer
 from lib.player.llm_player import LLMPlayer
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_index import WordIndex
@@ -45,17 +49,22 @@ THEMES = {
 VALID_THEMES = list(THEMES.keys()) + ["random", "shuffle"]
 
 
-def init_player(state, play_with_llm=False):
+def init_player(state, player_type):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
     word_scorer = StatisticalWordScorer(words, b=0.5)
 
-    if play_with_llm:
+    if player_type == "human":
+        return HumanPlayer()
+    elif player_type == "bot":
+        logging.info("initializing Bot player...")
+        return BotPlayer(state, words=word_index, word_scorer=word_scorer)
+    elif player_type == "llm":
         logging.info("initializing LLM player...")
         return LLMPlayer(state, words=word_index)
     else:
-        logging.info("initializing Bot player...")
-        return BotPlayer(state, words=word_index, word_scorer=word_scorer)
+        raise Exception(f"Invalid player type: {player_type}")
+
 
 def map_result(result, theme):
     if theme == "random":
@@ -83,19 +92,50 @@ def map_result(result, theme):
     return result
 
 
-def go(
+def console_game(player_type, wordlen=5, initial_guesses=[], theme="default"):
+    words = WordLoader.load_wordlist()
+    state = DummyWordleGame(words)
+    player = init_player(state, player_type)
+
+    print("-" * wordlen)
+
+    result = None
+    while True:
+        if initial_guesses:
+            guess = initial_guesses.pop(0)
+        else:
+            guess = player.guess(state, prev=result)
+        result = state.update(guess)
+        for i, pair in enumerate(result.letters):
+            letter, letter_state = pair if pair else (None, None)
+            if letter_state == GameInterface.LETTER_STATE_PLACED:
+                cprint(letter, "white", "on_green", end="", attrs=["bold"])
+            elif letter_state == GameInterface.LETTER_STATE_PRESENT:
+                cprint(letter, "white", "on_yellow", end="", attrs=["bold"])
+            else:
+                cprint(guess[i], end="")
+
+        if guess == state.answer:
+            cprint(f"\nSolved! {state.guesses} guess(es)", "green")
+            return state.guesses
+        else:
+            player.update_state(result)
+        print("")
+
+
+def browser_game(
     variant="wordle",
     headless=False,
     theme="default",
     initial_guesses=[],
-    play_with_llm=False,
+    player_type="bot",
 ):
     state = None
     try:
         logging.info("Visiting game site.")
         game_class = WordleGame if variant == "wordle" else AbsurdleGame
         state = game_class(headless=headless)
-        player = init_player(state, play_with_llm=play_with_llm)
+        player = init_player(state, player_type)
 
         result = None
         n_guesses = 0
@@ -141,62 +181,99 @@ def go(
             state.quit()
 
 
-parser = argparse.ArgumentParser(
-    description="Have a bot play wordle (or a variant) in the browser"
-)
-parser.add_argument(
-    "--headless", action="store_true", help="Run with a visible browser"
-)
-parser.add_argument(
-    "--llm", action="store_true", help="Use the Gemini LLM to generate guesses"
-)
-parser.add_argument(
-    "-v",
-    "--variant",
-    type=str,
-    required=False,
-    default="wordle",
-    help="Number of games to run",
-)
-parser.add_argument(
-    "-g",
-    "--guesses",
-    type=str,
-    required=False,
-    default=None,
-    help="Comma-separated list of initial guesses.",
-)
-parser.add_argument(
-    "-t",
-    "--theme",
-    type=str,
-    required=False,
-    default="default",
-    help=f"Theme for progress output. (Options: {','.join(VALID_THEMES)})",
-)
+def main():
+    f = Figlet(font="roman")
+    cprint("\n" + f.renderText("Wordle"), "cyan")
 
-args = parser.parse_args()
+    parser = argparse.ArgumentParser(
+        description="Play wordle on the command line or in a browser."
+    )
+    parser.add_argument(
+        "-g",
+        "--game",
+        type=str,
+        required=False,
+        default="browser",
+        help="Game type (browser or cli)",
+    )
+    parser.add_argument(
+        "-p",
+        "--player",
+        type=str,
+        required=False,
+        default="human",
+        help="Type of player (human, bot, or llm)",
+    )
+    parser.add_argument(
+        "--headless",
+        action="store_true",
+        help="Run without visible browser (only for bot/llm players)"
+    )
+    parser.add_argument(
+        "-v",
+        "--variant",
+        type=str,
+        required=False,
+        default="wordle",
+        help="Game variant (wordle or absurdle)",
+    )
+    parser.add_argument(
+        "-i",
+        "--input-guesses",
+        type=str,
+        required=False,
+        default=None,
+        help="Comma-separated list of initial guesses (only for bot/llm players).",
+    )
+    parser.add_argument(
+        "-t",
+        "--theme",
+        type=str,
+        required=False,
+        default="default",
+        help=f"""Theme for progress output (only for bot/llm players).
+            (Options: {','.join(VALID_THEMES)})"""
+    )
 
-initial_guesses = []
-variant = "wordle"
-if args.variant not in ("wordle", "absurdle"):
-    raise Exception(f"Invalid variant: {variant}")
-else:
-    variant = args.variant
+    args = parser.parse_args()
 
-if args.theme not in VALID_THEMES:
-    raise Exception(f"Invalid theme: {args.theme}")
+    if args.game not in ("browser", "cli"):
+        raise Exception(f"Invalid game type: {args.game}")
 
-if args.guesses:
-    if re.match(r"[a-zA-Z]{5}(,[a-zA-Z]{5})*", args.guesses):
-        initial_guesses = args.guesses.upper().split(",")
-    else:
-        raise Exception("Invalid guesses!")
+    if args.player not in ("human", "bot", "llm"):
+        raise Exception(f"Invalid player {args.player}")
 
-go(
-    variant=variant,
-    headless=args.headless,
-    initial_guesses=initial_guesses,
-    theme=args.theme,
-    play_with_llm=args.llm,
-)
+    if args.variant not in ("wordle", "absurdle"):
+        raise Exception(f"Invalid variant: {args.variant}")
+
+    if args.theme not in VALID_THEMES:
+        raise Exception(f"Invalid theme: {args.theme}")
+
+    initial_guesses = []
+    if args.input_guesses:
+        if re.match(r"[a-zA-Z]{5}(,[a-zA-Z]{5})*", args.input_guesses):
+            initial_guesses = args.input_guesses.upper().split(",")
+        else:
+            raise Exception("Invalid guesses!")
+
+    if args.player == "human" and args.headless:
+        raise Exception("Cannot run headless human game")
+
+    if args.game == "cli":
+        console_game(
+            player_type=args.player,
+            initial_guesses=initial_guesses,
+            theme=args.theme
+        )
+    elif args.game == "browser":
+        browser_game(
+            variant=args.variant,
+            headless=args.headless,
+            initial_guesses=initial_guesses,
+            theme=args.theme,
+            player_type=args.player,
+        )
+
+
+if __name__ == "__main__":
+    main()

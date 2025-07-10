@@ -37,31 +37,38 @@ pipenv shell
 
 ### 2. Running the Bot
 
-#### In-Browser Play
+`main.py` is the entry point for playing Wordle.
+
+#### In-Browser Play (Bot/LLM)
 
 Have the bot play a game of Wordle in a browser:
 ```bash
-python play.py --variant wordle
+python main.py --player bot --variant wordle
 ```
 
 Play Wordle in a browser, with `SALET` and `UNFIT` as the first guesses:
 ```bash
-python play.py --variant wordle --guesses SALET,UNFIT
+python main.py --player bot --variant wordle --guesses SALET,UNFIT
 ```
 
 Have the bot play a game of [Absurdle](https://qntm.org/wordle) in a headless browser:
 ```bash
-python play.py --variant absurdle --headless
+python main.py --player bot --variant absurdle --headless
 ```
 
-Use `--help` for more information.
+Have the LLM play a game of Wordle in a browser:
+```bash
+python main.py --player llm --variant wordle
+```
 
-#### Command-Line Game
+#### Command-Line Game (Human)
 
 To play a game of Wordle on the command line yourself:
 ```bash
-python wordle.py
+python main.py --player human
 ```
+
+Use `--help` for more information on all available options.
 
 ### 3. Running Tests
 
