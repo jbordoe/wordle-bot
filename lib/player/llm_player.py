@@ -1,9 +1,11 @@
 import logging
 import os
+
 import google.generativeai as genai
 
 from lib.player.player_interface import PlayerInterface
 from lib.player.player_knowledge import PlayerKnowledge
+
 
 class LLMPlayer(PlayerInterface):
     """
@@ -13,17 +15,18 @@ class LLMPlayer(PlayerInterface):
     def __init__(self, game_state, words=None, word_scorer=None):
         self.knowledge = PlayerKnowledge(game_state.word_length)
         self.guessed = set()
-        
+
         # Configure the Gemini API
         api_key = os.environ.get("GEMINI_API_KEY")
         if not api_key:
             raise ValueError("GEMINI_API_KEY environment variable not set.")
         genai.configure(api_key=api_key)
-        self.llm = genai.GenerativeModel('gemini-2.0-flash')
-
+        self.llm = genai.GenerativeModel("gemini-2.0-flash")
 
     def guess(self, game_state, prev=None) -> str:
-        placed_str = ''.join(l if l else '' for l in self.knowledge.placed)
+        placed_str = "".join(
+            letter if letter else "" for letter in self.knowledge.placed
+        )
         if len(placed_str) == game_state.word_length:
             return placed_str
 
@@ -57,9 +60,11 @@ class LLMPlayer(PlayerInterface):
             return None
 
     def _generate_prompt(self, game_state, prev=None) -> str:
-        placed_str = ''.join([l if l else '?' for l in self.knowledge.placed])
-        absent_str = ', '.join(sorted(list(self.knowledge.filter)))
-        present_str = ', '.join(sorted(list(self.knowledge.present)))
+        placed_str = "".join(
+            [letter if letter else "?" for letter in self.knowledge.placed]
+        )
+        absent_str = ", ".join(sorted(list(self.knowledge.filter)))
+        present_str = ", ".join(sorted(list(self.knowledge.present)))
         excluded_str = self._generate_excludes_str()
 
         prompt = f"""
@@ -94,5 +99,6 @@ OUTPUT: Complete {game_state.word_length}-letter word in UPPERCASE only.
         excludes_str = ""
         for i, letters in enumerate(self.knowledge.excludes):
             if letters:
-                excludes_str += f"  - Position {i+1} cannot be: {', '.join(sorted(list(letters)))}\n"
+                excludes_for_pos = ', '.join(sorted(list(letters)))
+                excludes_str += f"  - Position {i + 1} cannot be: {excludes_for_pos}\n"
         return excludes_str if excludes_str else "  - None\n"

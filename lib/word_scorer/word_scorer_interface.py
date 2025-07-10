@@ -2,10 +2,10 @@ class WordScorerInterface:
     AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __init__(self, wordlist):
-       pass
+        pass
 
     def rank(self, words):
-       pass
+        pass
 
     def update(self, wordlist):
-       pass
+        pass

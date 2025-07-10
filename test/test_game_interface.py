@@ -1,14 +1,18 @@
 import unittest
+
 from lib.game.game_interface import GameInterface
+
 
 class TestGameInterface(unittest.TestCase):
     def setUp(self):
         """
         Set up a minimal mock sublass for each test.
         """
+
         class TestGame(GameInterface):
             def __init__(self):
                 pass
+
         self.subclass = TestGame()
 
     def test_init_raises_not_implemented(self):
@@ -24,7 +28,7 @@ class TestGameInterface(unittest.TestCase):
         implemented it raises NotImplementedError.
         """
         with self.assertRaises(NotImplementedError):
-            self.subclass.update('test')
+            self.subclass.update("test")
 
     def test_undo_raises_not_implemented(self):
         """
@@ -39,6 +43,7 @@ class TestGameInterface(unittest.TestCase):
         Tests that calling the 'quit' method on a subclass that hasn't
         implemented it raises NotImplementedError.
         """
+
         class TestGame(GameInterface):
             def __init__(self):
                 pass
@@ -47,5 +52,6 @@ class TestGameInterface(unittest.TestCase):
         with self.assertRaises(NotImplementedError):
             game.quit()
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

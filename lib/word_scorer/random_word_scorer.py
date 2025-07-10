@@ -1,6 +1,5 @@
-import random
-
 from lib.word_scorer.word_scorer_interface import WordScorerInterface
+
 
 class RandomWordScorer(WordScorerInterface):
     AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"

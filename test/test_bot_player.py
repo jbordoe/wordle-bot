@@ -1,16 +1,13 @@
 import unittest
-from unittest.mock import patch, Mock, MagicMock
+from unittest.mock import MagicMock, Mock, patch
+
 from lib.player.bot_player import BotPlayer
-from lib.game.game_interface import GameInterface
 from lib.player.player_knowledge import PlayerKnowledge
 
-class TestBotPlayer(unittest.TestCase):
 
+class TestBotPlayer(unittest.TestCase):
     def setUp(self):
-        self.game_state = Mock(
-            wordlist=["HELLO", "WORLD"],
-            word_length=5
-        )
+        self.game_state = Mock(wordlist=["HELLO", "WORLD"], word_length=5)
         self.player = BotPlayer(self.game_state)
 
     def test_initialization(self):
@@ -47,7 +44,7 @@ class TestBotPlayer(unittest.TestCase):
         guess = self.player.guess(self.game_state)
         self.assertEqual(guess, "APPLE")
 
-    @patch('lib.player.player_knowledge.PlayerKnowledge.update_state')
+    @patch("lib.player.player_knowledge.PlayerKnowledge.update_state")
     def test_update_state_delegates_to_knowledge(self, mock_update_state):
         """
         Test that the player's update_state method correctly delegates
@@ -57,8 +54,6 @@ class TestBotPlayer(unittest.TestCase):
         self.player.update_state(mock_result)
         mock_update_state.assert_called_once_with(mock_result)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
-
-
-

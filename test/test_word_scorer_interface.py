@@ -1,8 +1,9 @@
 import unittest
+
 from lib.word_scorer.word_scorer_interface import WordScorerInterface
 
-class TestWordScorerInterface(unittest.TestCase):
 
+class TestWordScorerInterface(unittest.TestCase):
     def test_instantiation(self):
         """
         Tests that the WordScorerInterface can be instantiated.
@@ -24,5 +25,6 @@ class TestWordScorerInterface(unittest.TestCase):
         except Exception as e:
             self.fail(f"Interface method call raised an exception: {e}")
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

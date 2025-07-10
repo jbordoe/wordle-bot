@@ -1,11 +1,11 @@
-import unittest
 import random
+import unittest
+
 from lib.game.dummy_wordle_game import DummyWordleGame
 from lib.game.game_interface import GameInterface
-from lib.game.game_guess_result import GameGuessResult
+
 
 class TestDummyWordleGame(unittest.TestCase):
-
     def setUp(self):
         """
         Set up a dummy game with a predictable wordlist and seed.
@@ -42,13 +42,13 @@ class TestDummyWordleGame(unittest.TestCase):
 
         self.assertFalse(result.correct)
         self.assertEqual(result.guess, "CRANE")
-        
+
         expected_letters = [
-            ('C', GameInterface.LETTER_STATE_ABSENT),
-            ('R', GameInterface.LETTER_STATE_ABSENT),
-            ('A', GameInterface.LETTER_STATE_PLACED),
-            ('N', GameInterface.LETTER_STATE_ABSENT),
-            ('E', GameInterface.LETTER_STATE_PRESENT),
+            ("C", GameInterface.LETTER_STATE_ABSENT),
+            ("R", GameInterface.LETTER_STATE_ABSENT),
+            ("A", GameInterface.LETTER_STATE_PLACED),
+            ("N", GameInterface.LETTER_STATE_ABSENT),
+            ("E", GameInterface.LETTER_STATE_PRESENT),
         ]
         self.assertEqual(result.letters, expected_letters)
         self.assertEqual(self.game.guesses, 1)
@@ -61,16 +61,17 @@ class TestDummyWordleGame(unittest.TestCase):
 
         self.assertFalse(result.correct)
         self.assertEqual(result.guess, "SALES")
-        
+
         expected_letters = [
-            ('S', GameInterface.LETTER_STATE_PRESENT), # Only one S is present
-            ('A', GameInterface.LETTER_STATE_PRESENT),
-            ('L', GameInterface.LETTER_STATE_ABSENT),
-            ('E', GameInterface.LETTER_STATE_PRESENT),
-            ('S', GameInterface.LETTER_STATE_ABSENT), # second S is absent
+            ("S", GameInterface.LETTER_STATE_PRESENT),  # Only one S is present
+            ("A", GameInterface.LETTER_STATE_PRESENT),
+            ("L", GameInterface.LETTER_STATE_ABSENT),
+            ("E", GameInterface.LETTER_STATE_PRESENT),
+            ("S", GameInterface.LETTER_STATE_ABSENT),  # second S is absent
         ]
         self.assertEqual(result.letters, expected_letters)
         self.assertEqual(self.game.guesses, 1)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

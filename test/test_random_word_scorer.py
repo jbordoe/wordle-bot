@@ -1,10 +1,11 @@
 import unittest
+
 from lib.word_scorer.random_word_scorer import RandomWordScorer
 
-class TestRandomWordScorer(unittest.TestCase):
 
+class TestRandomWordScorer(unittest.TestCase):
     def setUp(self):
-        self.initial_words = ['apple', 'banana', 'cherry']
+        self.initial_words = ["apple", "banana", "cherry"]
         self.scorer = RandomWordScorer(self.initial_words)
 
     def test_instantiation(self):
@@ -18,7 +19,7 @@ class TestRandomWordScorer(unittest.TestCase):
         """
         Tests that the rank method returns randomly ordered words.
         """
-        words_to_rank = ['acorn', 'berry', 'carrot', 'date']
+        words_to_rank = ["acorn", "berry", "carrot", "date"]
         ranked_list = self.scorer.rank(words_to_rank)
 
         self.assertEqual(set(ranked_list), set(words_to_rank))
@@ -27,9 +28,10 @@ class TestRandomWordScorer(unittest.TestCase):
         """
         Tests that the update method correctly updates the internal wordlist.
         """
-        new_words = ['dog', 'cat', 'mouse']
+        new_words = ["dog", "cat", "mouse"]
         self.scorer.update(new_words)
         self.assertEqual(self.scorer.wordlist, new_words)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

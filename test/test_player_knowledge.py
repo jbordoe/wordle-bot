@@ -1,11 +1,11 @@
 import unittest
 from unittest.mock import MagicMock
 
-from lib.player.player_knowledge import PlayerKnowledge
 from lib.game.game_interface import GameInterface
+from lib.player.player_knowledge import PlayerKnowledge
+
 
 class TestPlayerKnowledge(unittest.TestCase):
-
     def setUp(self):
         """
         Set up a new PlayerKnowledge instance for each test.
@@ -14,7 +14,7 @@ class TestPlayerKnowledge(unittest.TestCase):
 
     def test_initialization(self):
         """
-        Tests that the PlayerKnowledge class is instantiated with the correct empty state.
+        Tests that PlayerKnowledge is instantiated with the correct empty state.
         """
         self.assertEqual(self.knowledge.word_length, 5)
         self.assertEqual(self.knowledge.placed, [None, None, None, None, None])
@@ -29,19 +29,19 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "RAISE"
         mock_result.letters = [
-            ('R', GameInterface.LETTER_STATE_ABSENT),
-            ('A', GameInterface.LETTER_STATE_PLACED),
-            ('I', GameInterface.LETTER_STATE_PRESENT),
-            ('S', GameInterface.LETTER_STATE_ABSENT),
-            ('E', GameInterface.LETTER_STATE_PLACED)
+            ("R", GameInterface.LETTER_STATE_ABSENT),
+            ("A", GameInterface.LETTER_STATE_PLACED),
+            ("I", GameInterface.LETTER_STATE_PRESENT),
+            ("S", GameInterface.LETTER_STATE_ABSENT),
+            ("E", GameInterface.LETTER_STATE_PLACED),
         ]
 
         self.knowledge.update_state(mock_result)
 
-        self.assertEqual(self.knowledge.placed, [None, 'A', None, None, 'E'])
-        self.assertEqual(self.knowledge.present, {'I'})
-        self.assertEqual(self.knowledge.filter, {'R', 'S'})
-        self.assertEqual(self.knowledge.excludes[2], {'I'})
+        self.assertEqual(self.knowledge.placed, [None, "A", None, None, "E"])
+        self.assertEqual(self.knowledge.present, {"I"})
+        self.assertEqual(self.knowledge.filter, {"R", "S"})
+        self.assertEqual(self.knowledge.excludes[2], {"I"})
 
     def test_update_state_with_duplicate_letters(self):
         """
@@ -51,20 +51,20 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "APPLE"
         mock_result.letters = [
-            ('A', GameInterface.LETTER_STATE_PRESENT),
-            ('P', GameInterface.LETTER_STATE_ABSENT),
-            ('P', GameInterface.LETTER_STATE_PLACED),
-            ('L', GameInterface.LETTER_STATE_ABSENT),
-            ('E', GameInterface.LETTER_STATE_PRESENT)
+            ("A", GameInterface.LETTER_STATE_PRESENT),
+            ("P", GameInterface.LETTER_STATE_ABSENT),
+            ("P", GameInterface.LETTER_STATE_PLACED),
+            ("L", GameInterface.LETTER_STATE_ABSENT),
+            ("E", GameInterface.LETTER_STATE_PRESENT),
         ]
 
         self.knowledge.update_state(mock_result)
 
-        self.assertEqual(self.knowledge.placed, [None, None, 'P', None, None])
-        self.assertEqual(self.knowledge.present, {'A', 'E'})
-        self.assertEqual(self.knowledge.filter, {'L'}) # P should not be in filter
-        self.assertEqual(self.knowledge.excludes[0], {'A'})
-        self.assertEqual(self.knowledge.excludes[4], {'E'})
+        self.assertEqual(self.knowledge.placed, [None, None, "P", None, None])
+        self.assertEqual(self.knowledge.present, {"A", "E"})
+        self.assertEqual(self.knowledge.filter, {"L"})  # P should not be in filter
+        self.assertEqual(self.knowledge.excludes[0], {"A"})
+        self.assertEqual(self.knowledge.excludes[4], {"E"})
 
     def test_update_state_placed_letter_also_present(self):
         """
@@ -75,20 +75,20 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "SASSY"
         mock_result.letters = [
-            ('S', GameInterface.LETTER_STATE_ABSENT),
-            ('A', GameInterface.LETTER_STATE_PRESENT),
-            ('S', GameInterface.LETTER_STATE_PRESENT),
-            ('S', GameInterface.LETTER_STATE_PLACED),
-            ('Y', GameInterface.LETTER_STATE_ABSENT)
+            ("S", GameInterface.LETTER_STATE_ABSENT),
+            ("A", GameInterface.LETTER_STATE_PRESENT),
+            ("S", GameInterface.LETTER_STATE_PRESENT),
+            ("S", GameInterface.LETTER_STATE_PLACED),
+            ("Y", GameInterface.LETTER_STATE_ABSENT),
         ]
 
         self.knowledge.update_state(mock_result)
 
-        self.assertEqual(self.knowledge.placed, [None, None, None, 'S', None])
-        self.assertEqual(self.knowledge.present, {'A', 'S'})
-        self.assertEqual(self.knowledge.filter, {'Y'}) # First S is not added to filter
-        self.assertEqual(self.knowledge.excludes[1], {'A'})
-        self.assertEqual(self.knowledge.excludes[2], {'S'})
+        self.assertEqual(self.knowledge.placed, [None, None, None, "S", None])
+        self.assertEqual(self.knowledge.present, {"A", "S"})
+        self.assertEqual(self.knowledge.filter, {"Y"})  # First S is not added to filter
+        self.assertEqual(self.knowledge.excludes[1], {"A"})
+        self.assertEqual(self.knowledge.excludes[2], {"S"})
 
     def test_raises_on_invalid_letter_state(self):
         """
@@ -97,14 +97,15 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "APPLE"
         mock_result.letters = [
-            ('A', GameInterface.LETTER_STATE_PRESENT),
-            ('P', GameInterface.LETTER_STATE_ABSENT),
-            ('L', GameInterface.LETTER_STATE_ABSENT),
-            ('E', 'invalid'),
-            ('P', GameInterface.LETTER_STATE_PRESENT)
+            ("A", GameInterface.LETTER_STATE_PRESENT),
+            ("P", GameInterface.LETTER_STATE_ABSENT),
+            ("L", GameInterface.LETTER_STATE_ABSENT),
+            ("E", "invalid"),
+            ("P", GameInterface.LETTER_STATE_PRESENT),
         ]
         with self.assertRaises(ValueError):
             self.knowledge.update_state(mock_result)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()

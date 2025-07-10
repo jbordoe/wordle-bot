@@ -8,6 +8,6 @@ class WordSetInterface:
         placed_letters=None,
         contains=None,
         filter=None,
-        excludes=None
+        excludes=None,
     ):
         pass

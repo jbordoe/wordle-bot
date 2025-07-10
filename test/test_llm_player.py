@@ -1,12 +1,12 @@
-import unittest
 import os
-from unittest.mock import patch, MagicMock
+import unittest
+from unittest.mock import MagicMock, patch
 
 from lib.player.llm_player import LLMPlayer
 from lib.player.player_knowledge import PlayerKnowledge
 
-class TestLLMPlayer(unittest.TestCase):
 
+class TestLLMPlayer(unittest.TestCase):
     def setUp(self):
         """
         Set up a mock game state and environment for each test.
@@ -15,7 +15,7 @@ class TestLLMPlayer(unittest.TestCase):
         self.mock_game_state.word_length = 5
 
         # Patch the google.generativeai module for the duration of each test
-        self.mock_genai_patcher = patch('lib.player.llm_player.genai')
+        self.mock_genai_patcher = patch("lib.player.llm_player.genai")
         self.mock_genai = self.mock_genai_patcher.start()
 
         # Set a dummy API key to allow instantiation
@@ -38,7 +38,7 @@ class TestLLMPlayer(unittest.TestCase):
         self.assertIsInstance(self.player.knowledge, PlayerKnowledge)
         # Check that the genai library was configured
         self.mock_genai.configure.assert_called_once_with(api_key="test-key")
-        self.mock_genai.GenerativeModel.assert_called_once_with('gemini-2.0-flash')
+        self.mock_genai.GenerativeModel.assert_called_once_with("gemini-2.0-flash")
         self.assertIsNotNone(self.player.llm)
 
     def test_init_with_no_api_key(self):
@@ -53,7 +53,7 @@ class TestLLMPlayer(unittest.TestCase):
         with self.assertRaises(ValueError):
             LLMPlayer(self.mock_game_state)
 
-    @patch('lib.player.player_knowledge.PlayerKnowledge.update_state')
+    @patch("lib.player.player_knowledge.PlayerKnowledge.update_state")
     def test_update_state_delegates_to_knowledge(self, mock_update_state):
         """
         Tests that the player's update_state method correctly delegates
@@ -93,7 +93,8 @@ class TestLLMPlayer(unittest.TestCase):
 
     def test_guess_with_no_llm_response(self):
         """
-        Tests that the guess method raises an exception when the LLM does not return a response.
+        Tests that the guess method raises an exception
+        when the LLM does not return a response.
         """
         mock_llm_response = MagicMock()
         mock_llm_response.text = ""
@@ -104,7 +105,8 @@ class TestLLMPlayer(unittest.TestCase):
 
     def test_guess_with_llm_exception(self):
         """
-        Tests that the guess method raises an exception when the LLM raises an exception.
+        Tests that the guess method raises an exception
+        when the LLM raises an exception.
         """
         mock_llm_response = MagicMock()
         mock_llm_response.text = ""
@@ -113,7 +115,6 @@ class TestLLMPlayer(unittest.TestCase):
         with self.assertRaises(Exception):
             self.player.guess(self.mock_game_state)
 
-if __name__ == '__main__':
+
+if __name__ == "__main__":
     unittest.main()
-
-

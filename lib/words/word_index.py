@@ -1,11 +1,10 @@
 import logging
 
-from functools import reduce
-
 from lib.words.word_set_interface import WordSetInterface
 
+
 class WordIndex(WordSetInterface):
-    AZ = 'ABCDEFGHIJKLMNOPQRSTUVWXYZ'
+    AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __init__(self, word_collection):
         wordlen = len(list(word_collection)[0])
@@ -34,11 +33,11 @@ class WordIndex(WordSetInterface):
         Finds words that match the given constraints.
 
         Parameters:
-        placed_letters (list): List of letters that have already been placed in the word.
+        placed_letters (list): List of letters already placed in the word.
             Unknown letters are represented by falsey values.
-        contains (list): List of letters known to be present in the word, but not necessarily placed.
+        contains (list): Letters present in the word, but not necessarily placed.
         filter (set): Set of letters that must not be present in the word.
-        excludes (list): List of sets of letters that cannot be present in each respective position.
+        excludes (list[set]): Letters that can't be present in each respective position.
 
         Returns:
         list: List of words that match the given constraints.
@@ -50,38 +49,54 @@ class WordIndex(WordSetInterface):
         excludes={excludes}
         """)
         # ensure all letters are upper case
-        placed_letters = [l.upper() if l else None for l in placed_letters]
-        contains = [l.upper() for l in contains] if contains else None
-        filter = set([l.upper() for l in filter])
-        excludes = [set([l.upper() for l in group]) for group in excludes]
+        placed_letters = [
+            letter.upper() if letter else None for letter in placed_letters
+        ]
+        contains = [letter.upper() for letter in contains] if contains else None
+        filter = set([letter.upper() for letter in filter])
+        excludes = [
+            set([letter.upper() for letter in group]) for group in excludes
+        ]
 
         placed_pairs = [c for c in enumerate(placed_letters) if c[1]]
         placed_set = self._find_in_ordered(placed_pairs)
 
         contains_set = self._find_in_unordered(contains) if contains else None
-        filter_set = set().union(*[self.unordered_index[l.upper()] for l in filter])
-        
+        filter_set = set().union(
+            *[self.unordered_index[letter.upper()] for letter in filter]
+        )
+
         filter_set = filter_set.union(
-            *[self.ordered_index[i][l] for i, ex in enumerate(excludes) if ex for l in ex]
+            *[
+                self.ordered_index[i][letter]
+                for i, ex in enumerate(excludes)
+                if ex
+                for letter in ex
+            ]
         )
 
         result = self.wordset
-        if placed_set != None: result = result.intersection(placed_set)
-        if contains_set != None: result = result.intersection(contains_set)
-        if filter_set != None: result = result.difference(filter_set)
+        if placed_set is not None:
+            result = result.intersection(placed_set)
+        if contains_set is not None:
+            result = result.intersection(contains_set)
+        if filter_set is not None:
+            result = result.difference(filter_set)
 
         return list(result)
-        
-    def _find_in_ordered(self, letters_with_index):
-        if not letters_with_index: return self.wordset
 
-        sets = [self.ordered_index[i][l] for i,l in letters_with_index]
+    def _find_in_ordered(self, letters_with_index):
+        if not letters_with_index:
+            return self.wordset
+
+        sets = [self.ordered_index[i][letter] for i, letter in letters_with_index]
         result = sets[0].intersection(*sets[1:])
         return result
 
     def _find_in_unordered(self, letters):
-        if not letters: return self.wordset
+        if not letters:
+            return self.wordset
 
-        sets = [self.unordered_index[l] for l in letters]
+        sets = [self.unordered_index[letter] for letter in letters]
         result = sets[0].intersection(*sets[1:])
         return result

@@ -2,6 +2,7 @@ import random
 
 from lib.word_scorer.word_scorer_interface import WordScorerInterface
 
+
 class StatisticalWordScorer(WordScorerInterface):
     AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
@@ -13,7 +14,9 @@ class StatisticalWordScorer(WordScorerInterface):
     def rank(self, words):
         self.update(words)
 
-        pairs = [(w, self.scores[w] + (random.random()*self.b)) for w in words]
+        pairs = [
+            (w, self.scores[w] + (random.random() * self.b)) for w in words
+        ]
         ranked = [pair[0] for pair in sorted(pairs, key=lambda x: x[1], reverse=True)]
         return ranked
 
@@ -28,8 +31,8 @@ class StatisticalWordScorer(WordScorerInterface):
         freq = dict([(c, 0) for c in self.AZ])
 
         for w in self.wordlist:
-            for i, l in enumerate(w.upper()):
-                freq[l] += 1
+            for i, letter in enumerate(w.upper()):
+                freq[letter] += 1
 
         n = len(self.wordlist)
 
@@ -39,7 +42,7 @@ class StatisticalWordScorer(WordScorerInterface):
             freq[c] /= n
 
         for w in self.wordlist:
-            score = sum([freq[l] for l in set(w.upper())])
+            score = sum([freq[letter] for letter in set(w.upper())])
             scores[w] = score
 
         return scores

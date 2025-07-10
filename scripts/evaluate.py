@@ -1,24 +1,24 @@
 import argparse
 
-from termcolor import cprint
 from alive_progress import alive_bar
-from termgraph.module import Data, BarChart, Args, Colors
+from termgraph.module import Args, BarChart, Colors, Data
 
 from lib.game.dummy_wordle_game import DummyWordleGame
 from lib.player.bot_player import BotPlayer
-from lib.words.word_index import WordIndex
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
+from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
+
 
 def go(runs, sample_size):
     wordlen = 5
     word_list = WordLoader.load_wordlist(sample_size=sample_size)
 
-    print('running games')
+    print("running games")
     guesses = {}
     words = WordIndex(word_list)
     ranker = StatisticalWordScorer(word_list)
-    with alive_bar(runs, bar='filling', spinner='dots') as bar:
+    with alive_bar(runs, bar="filling", spinner="dots") as bar:
         for i in range(runs):
             n_guesses = game(words, ranker, wordlen=wordlen)
             if n_guesses in guesses:
@@ -28,6 +28,7 @@ def go(runs, sample_size):
             bar()
     output_results(guesses)
 
+
 def output_results(guesses):
     print(f"""
 RESULTS
@@ -35,24 +36,22 @@ RESULTS
     max: {max(guesses)}
     min: {min(guesses)}
 """)
-    data_range = range(1, max(guesses.keys())+1)
-    data_labels = [f'{i} guess' for i in data_range]
+    data_range = range(1, max(guesses.keys()) + 1)
+    data_labels = [f"{i} guess" for i in data_range]
     data = [[guesses.get(i, 0)] for i in data_range]
 
-    data = Data(
-        data=data,
-        labels=data_labels
-    )
+    data = Data(data=data, labels=data_labels)
 
     chart = BarChart(
         data,
         Args(
             title="Guess distribution",
             colors=[Colors.Green, Colors.Red],
-            space_between=False
-        )
+            space_between=False,
+        ),
     )
     chart.draw()
+
 
 def game(words, ranker, wordlen=5):
     state = DummyWordleGame(words.list)
@@ -67,11 +66,20 @@ def game(words, ranker, wordlen=5):
         else:
             player.update_state(result)
 
-parser=argparse.ArgumentParser(description='Run several wordle games and output the results')
+
+parser = argparse.ArgumentParser(
+    description="Run several wordle games and output the results"
+)
 parser.add_argument(
-    '-n', '--runs', type=int, required=True, help='Number of games to run')
+    "-n", "--runs", type=int, required=True, help="Number of games to run"
+)
 parser.add_argument(
-'-s', '--sample_size', type=int, required=False, help='Number of words to sample (default: all)')
+    "-s",
+    "--sample_size",
+    type=int,
+    required=False,
+    help="Number of words to sample (default: all)",
+)
 
 args = parser.parse_args()
 

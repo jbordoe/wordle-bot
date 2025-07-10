@@ -4,17 +4,18 @@ import sys
 
 from lib.word_scorer.word_scorer_interface import WordScorerInterface
 
+
 class StatisticalPositionalWordScorer(WordScorerInterface):
     AZ = "ABCDEFGHIJKLMNOPQRSTUVWXYZ"
 
     def __init__(self, wordlist, b=0):
         """
-            Parameters:
-                wordlist (list):
-                    A list of words to analyze for scoring.
-                b (int, optional):
-                    A parameter that determines the weight of the randomness in the scoring algorithm.
-                    Default is 0
+        Parameters:
+            wordlist (list):
+                A list of words to analyze for scoring.
+            b (int, optional):
+                Determines the weight of randomness in the scoring algorithm.
+                Default is 0
         """
         self.b = b
         self.update(wordlist)
@@ -31,16 +32,18 @@ class StatisticalPositionalWordScorer(WordScorerInterface):
         """
         self.update(words)
 
-        pairs = [(w, self.scores[w] + (random.random()*self.b)) for w in words]
-        logging.debug(f"{self.__class__.__name__}.{sys._getframe().f_code.co_name}: pairs = {pairs}")
+        pairs = [(w, self.scores[w] + (random.random() * self.b)) for w in words]
+        logging.debug(
+            f"StatPosWordScorer.{sys._getframe().f_code.co_name}: pairs = {pairs}"
+        )
         ranked = [pair[0] for pair in sorted(pairs, key=lambda x: x[1], reverse=True)]
         return ranked
 
     def update(self, wordlist):
         """Updates the internal wordlist with new words and recalculates scores.
 
-            Parameters:
-                wordlist (list[string]): A list of words to update the internal wordlist with.
+        Parameters:
+            wordlist (list[string]): List of words to update internal wordlist with.
         """
         self.wordlist = list(wordlist)
 
@@ -51,12 +54,12 @@ class StatisticalPositionalWordScorer(WordScorerInterface):
         # stores frequency of each letter in the wordlist
         freq = dict([(c, 0) for c in self.AZ])
         # stores frequency of each letter in each position in the wordlist
-        pfreq = dict([((i,c), 0) for i in range(5) for c in self.AZ])
+        pfreq = dict([((i, c), 0) for i in range(5) for c in self.AZ])
 
         for w in self.wordlist:
-            for i, l in enumerate(w.upper()):
-                freq[l] += 1
-                pfreq[(i,l)] += 1
+            for i, letter in enumerate(w.upper()):
+                freq[letter] += 1
+                pfreq[(i, letter)] += 1
 
         n = len(self.wordlist)
 
@@ -64,13 +67,14 @@ class StatisticalPositionalWordScorer(WordScorerInterface):
 
         for c in self.AZ:
             freq[c] /= n
-            for i in range(5): pfreq[(i,c)] /= n
+            for i in range(5):
+                pfreq[(i, c)] /= n
 
         for w in self.wordlist:
             score = 0
-            for i, l in enumerate(w.upper()):
-                s = freq[l]
-                ps = pfreq[(i,l)]
+            for i, letter in enumerate(w.upper()):
+                s = freq[letter]
+                ps = pfreq[(i, letter)]
 
                 score += s * ps
 
