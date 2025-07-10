@@ -68,9 +68,9 @@ class TestBotPlayer(unittest.TestCase):
             letters=[
                 ("H", GameInterface.LETTER_STATE_PLACED),
                 ("A", GameInterface.LETTER_STATE_PRESENT),
-                None,
-                None,
-                None
+                ("P", GameInterface.LETTER_STATE_ABSENT),
+                ("P", GameInterface.LETTER_STATE_ABSENT),
+                ("Y", GameInterface.LETTER_STATE_ABSENT)
             ]
         )
         self.player.update_state(result)

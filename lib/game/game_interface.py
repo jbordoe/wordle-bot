@@ -4,6 +4,7 @@ from lib.game.game_guess_result import GameGuessResult
 class GameInterface:
     LETTER_STATE_PRESENT = 0
     LETTER_STATE_PLACED = 1
+    LETTER_STATE_ABSENT = 2
 
     def __init__(self):
         raise NotImplementedError

@@ -115,7 +115,7 @@ class WordleGame(GameInterface):
             elif evaluation == 'present':
                 res = (letter, self.LETTER_STATE_PRESENT)
             elif evaluation == 'absent':
-                res = None
+                res = (letter, self.LETTER_STATE_ABSENT)
             else:
                 logging.error(f'Unsupported evaluation: {evaluation}')
                 return None

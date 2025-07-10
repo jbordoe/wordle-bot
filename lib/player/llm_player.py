@@ -44,11 +44,11 @@ class LLMPlayer(PlayerInterface):
         guess = result.guess
         seen = set()
         for i, pair in enumerate(letters):
-            if not pair:
-                if not guess[i] in seen: self.filter.add(guess[i])
-                continue
             l, l_state = pair
-            if l_state == GameInterface.LETTER_STATE_PRESENT:
+            if l_state == GameInterface.LETTER_STATE_ABSENT and not l in seen:
+                self.filter.add(l)
+                continue
+            elif l_state == GameInterface.LETTER_STATE_PRESENT:
                 self.excludes[i].add(l)
                 self.present.add(l)
                 self.filter.discard(l)

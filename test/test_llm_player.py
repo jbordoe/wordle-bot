@@ -43,10 +43,10 @@ class TestLLMPlayer(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "RAISE"
         mock_result.letters = [
-            None,
+            ('R', GameInterface.LETTER_STATE_ABSENT),
             ('A', GameInterface.LETTER_STATE_PLACED),
             ('I', GameInterface.LETTER_STATE_PRESENT),
-            None,
+            ('S', GameInterface.LETTER_STATE_ABSENT),
             ('E', GameInterface.LETTER_STATE_PLACED)
         ]
 
