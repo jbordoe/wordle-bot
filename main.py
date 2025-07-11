@@ -13,6 +13,7 @@ from lib.game.wordle_game import WordleGame
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
 from lib.player.llm_player import LLMPlayer
+from lib.player.nn_player import NNPlayer
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
@@ -48,7 +49,7 @@ THEMES = {
 VALID_THEMES = list(THEMES.keys()) + ["random", "shuffle"]
 
 
-def init_player(state, player_type):
+def init_player(state, player_type, model_path=None):
     words = WordLoader.load_wordlist()
     word_index = WordIndex(words)
     word_scorer = StatisticalWordScorer(words, b=0.5)
@@ -61,6 +62,9 @@ def init_player(state, player_type):
     elif player_type == "llm":
         logging.info("initializing LLM player...")
         return LLMPlayer(state, words=word_index)
+    elif player_type == "nn":
+        logging.info("initializing NN player...")
+        return NNPlayer(state, words=word_index)
     else:
         raise Exception(f"Invalid player type: {player_type}")
 
@@ -103,7 +107,7 @@ def console_game(player_type, wordlen=5, initial_guesses=[], theme="default"):
         if initial_guesses:
             guess = initial_guesses.pop(0)
         else:
-            guess = player.guess(state, prev=result)
+            guess = player.guess(state, prev=result).upper()
         result = state.update(guess)
         for i, letter_obj in enumerate(result.letters):
             if letter_obj.is_placed():
@@ -200,7 +204,7 @@ def main():
         type=str,
         required=False,
         default="human",
-        help="Type of player (human, bot, or llm)",
+        help="Type of player (human, bot, nn, or llm)",
     )
     parser.add_argument(
         "--headless",
@@ -238,7 +242,7 @@ def main():
     if args.game not in ("browser", "cli"):
         raise Exception(f"Invalid game type: {args.game}")
 
-    if args.player not in ("human", "bot", "llm"):
+    if args.player not in ("human", "bot", "llm", "nn"):
         raise Exception(f"Invalid player {args.player}")
 
     if args.variant not in ("wordle", "absurdle"):
