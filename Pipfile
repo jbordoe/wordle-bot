@@ -15,6 +15,7 @@ seaborn = "*"
 pyfiglet = "*"
 colorlog = "*"
 google-generativeai = "*"
+torch = "*"
 
 [dev-packages]
 coverage = "*"
