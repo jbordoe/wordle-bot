@@ -1,7 +1,8 @@
 import unittest
 from unittest.mock import MagicMock
 
-from lib.game.game_interface import GameInterface
+from lib.game.game_constants import GameConstants
+from lib.game.game_guess_letter import GameGuessLetter
 from lib.player.player_knowledge import PlayerKnowledge
 
 
@@ -29,11 +30,11 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "RAISE"
         mock_result.letters = [
-            ("R", GameInterface.LETTER_STATE_ABSENT),
-            ("A", GameInterface.LETTER_STATE_PLACED),
-            ("I", GameInterface.LETTER_STATE_PRESENT),
-            ("S", GameInterface.LETTER_STATE_ABSENT),
-            ("E", GameInterface.LETTER_STATE_PLACED),
+            GameGuessLetter(value="R", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="A", state=GameConstants.LETTER_STATE_PLACED),
+            GameGuessLetter(value="I", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="S", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="E", state=GameConstants.LETTER_STATE_PLACED),
         ]
 
         self.knowledge.update_state(mock_result)
@@ -51,11 +52,11 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "APPLE"
         mock_result.letters = [
-            ("A", GameInterface.LETTER_STATE_PRESENT),
-            ("P", GameInterface.LETTER_STATE_ABSENT),
-            ("P", GameInterface.LETTER_STATE_PLACED),
-            ("L", GameInterface.LETTER_STATE_ABSENT),
-            ("E", GameInterface.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="A", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="P", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="P", state=GameConstants.LETTER_STATE_PLACED),
+            GameGuessLetter(value="L", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="E", state=GameConstants.LETTER_STATE_PRESENT),
         ]
 
         self.knowledge.update_state(mock_result)
@@ -75,11 +76,11 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "SASSY"
         mock_result.letters = [
-            ("S", GameInterface.LETTER_STATE_ABSENT),
-            ("A", GameInterface.LETTER_STATE_PRESENT),
-            ("S", GameInterface.LETTER_STATE_PRESENT),
-            ("S", GameInterface.LETTER_STATE_PLACED),
-            ("Y", GameInterface.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="S", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="A", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="S", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="S", state=GameConstants.LETTER_STATE_PLACED),
+            GameGuessLetter(value="Y", state=GameConstants.LETTER_STATE_ABSENT),
         ]
 
         self.knowledge.update_state(mock_result)
@@ -97,11 +98,11 @@ class TestPlayerKnowledge(unittest.TestCase):
         mock_result = MagicMock()
         mock_result.guess = "APPLE"
         mock_result.letters = [
-            ("A", GameInterface.LETTER_STATE_PRESENT),
-            ("P", GameInterface.LETTER_STATE_ABSENT),
-            ("L", GameInterface.LETTER_STATE_ABSENT),
-            ("E", "invalid"),
-            ("P", GameInterface.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="A", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="P", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="L", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="E", state="invalid"),
+            GameGuessLetter(value="P", state=GameConstants.LETTER_STATE_PRESENT),
         ]
         with self.assertRaises(ValueError):
             self.knowledge.update_state(mock_result)

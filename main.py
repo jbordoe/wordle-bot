@@ -9,7 +9,6 @@ from termcolor import colored, cprint
 
 from lib.game.absurdle_game import AbsurdleGame
 from lib.game.dummy_wordle_game import DummyWordleGame
-from lib.game.game_interface import GameInterface
 from lib.game.wordle_game import WordleGame
 from lib.player.bot_player import BotPlayer
 from lib.player.human_player import HumanPlayer
@@ -106,14 +105,13 @@ def console_game(player_type, wordlen=5, initial_guesses=[], theme="default"):
         else:
             guess = player.guess(state, prev=result)
         result = state.update(guess)
-        for i, pair in enumerate(result.letters):
-            letter, letter_state = pair if pair else (None, None)
-            if letter_state == GameInterface.LETTER_STATE_PLACED:
-                cprint(letter, "white", "on_green", end="", attrs=["bold"])
-            elif letter_state == GameInterface.LETTER_STATE_PRESENT:
-                cprint(letter, "white", "on_yellow", end="", attrs=["bold"])
+        for i, letter_obj in enumerate(result.letters):
+            if letter_obj.is_placed():
+                cprint(letter_obj.value, "white", "on_green", end="", attrs=["bold"])
+            elif letter_obj.is_present():
+                cprint(letter_obj.value, "white", "on_yellow", end="", attrs=["bold"])
             else:
-                cprint(guess[i], end="")
+                cprint(letter_obj.value, end="")
 
         if guess == state.answer:
             cprint(f"\nSolved! {state.guesses} guess(es)", "green")
@@ -148,7 +146,7 @@ def browser_game(
                 guess = player.guess(state, prev=result)
 
             if not guess:
-                print(result.letters)
+                print([letter_obj.value for letter_obj in result.letters])
                 raise Exception("Could not find a word!")
 
             guess_for_print = colored(guess, "yellow", attrs=["bold", "underline"])

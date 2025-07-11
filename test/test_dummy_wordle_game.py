@@ -2,7 +2,8 @@ import random
 import unittest
 
 from lib.game.dummy_wordle_game import DummyWordleGame
-from lib.game.game_interface import GameInterface
+from lib.game.game_constants import GameConstants
+from lib.game.game_guess_letter import GameGuessLetter
 
 
 class TestDummyWordleGame(unittest.TestCase):
@@ -44,11 +45,11 @@ class TestDummyWordleGame(unittest.TestCase):
         self.assertEqual(result.guess, "CRANE")
 
         expected_letters = [
-            ("C", GameInterface.LETTER_STATE_ABSENT),
-            ("R", GameInterface.LETTER_STATE_ABSENT),
-            ("A", GameInterface.LETTER_STATE_PLACED),
-            ("N", GameInterface.LETTER_STATE_ABSENT),
-            ("E", GameInterface.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="C", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="R", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="A", state=GameConstants.LETTER_STATE_PLACED),
+            GameGuessLetter(value="N", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="E", state=GameConstants.LETTER_STATE_PRESENT),
         ]
         self.assertEqual(result.letters, expected_letters)
         self.assertEqual(self.game.guesses, 1)
@@ -63,11 +64,13 @@ class TestDummyWordleGame(unittest.TestCase):
         self.assertEqual(result.guess, "SALES")
 
         expected_letters = [
-            ("S", GameInterface.LETTER_STATE_PRESENT),  # Only one S is present
-            ("A", GameInterface.LETTER_STATE_PRESENT),
-            ("L", GameInterface.LETTER_STATE_ABSENT),
-            ("E", GameInterface.LETTER_STATE_PRESENT),
-            ("S", GameInterface.LETTER_STATE_ABSENT),  # second S is absent
+            # Only one S is present
+            GameGuessLetter(value="S", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="A", state=GameConstants.LETTER_STATE_PRESENT),
+            GameGuessLetter(value="L", state=GameConstants.LETTER_STATE_ABSENT),
+            GameGuessLetter(value="E", state=GameConstants.LETTER_STATE_PRESENT),
+            # seconf S is absent
+            GameGuessLetter(value="S", state=GameConstants.LETTER_STATE_ABSENT)
         ]
         self.assertEqual(result.letters, expected_letters)
         self.assertEqual(self.game.guesses, 1)

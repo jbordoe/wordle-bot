@@ -1,4 +1,8 @@
-from lib.game.game_interface import GameInterface
+from typing import List, Optional, Set
+
+from lib.game.game_constants import GameConstants
+from lib.game.game_guess_letter import GameGuessLetter
+from lib.game.game_guess_result import GameGuessResult
 
 
 class PlayerKnowledge:
@@ -7,35 +11,40 @@ class PlayerKnowledge:
     This includes placed letters, present letters, and absent letters.
     """
 
-    def __init__(self, word_length):
-        self.word_length = word_length
-        self.placed = [None for _ in range(word_length)]
-        self.present = set()
-        self.filter = set()
-        self.excludes = [set() for _ in range(word_length)]
-        self.history = []
+    def __init__(self, word_length: int):
+        self.word_length: int = word_length
+        self.placed: List[Optional[str]] = [None] * word_length
+        self.present: Set[str] = set()
+        self.filter: Set[str] = set()
+        self.excludes: List[Set[str]] = [set() for _ in range(word_length)]
+        self.history: List[GameGuessResult] = []
+        self.letters = [
+            GameGuessLetter("", GameConstants.LETTER_STATE_INIT)
+            for _ in range(word_length)
+        ]
 
-    def update_state(self, result) -> None:
+    def update_state(self, result: GameGuessResult) -> None:
         """
         Updates the player's knowledge based on the result of a guess.
         """
         self.history.append(result)
+        self.letters = result.letters
 
-        letters = result.letters
         guess = result.guess
         seen = set()
-        for i, pair in enumerate(letters):
-            letter, l_state = pair
-            if l_state == GameInterface.LETTER_STATE_ABSENT:
+        for i, letter_obj in enumerate(result.letters):
+            letter = letter_obj.value
+
+            if letter_obj.is_absent():
                 if letter not in seen:
                     # If the letter is not present, it can't be placed.
                     self.filter.add(letter)
                 continue
-            if l_state == GameInterface.LETTER_STATE_PRESENT:
+            if letter_obj.is_present():
                 self.excludes[i].add(letter)  # We know this letter isn't placed here
                 self.present.add(letter)
                 self.filter.discard(letter)
-            elif l_state == GameInterface.LETTER_STATE_PLACED:
+            elif letter_obj.is_placed():
                 self.placed[i] = letter
                 self.filter.discard(letter)
                 # A letter can be both placed and present
@@ -44,6 +53,6 @@ class PlayerKnowledge:
                 if guess.count(letter) == 1:
                     self.present.discard(letter)
             else:
-                raise ValueError(f"Invalid letter state: {pair}")
+                raise ValueError(f"Invalid letter state: {letter_obj}")
 
-            seen.add(guess[i])
+            seen.add(letter)
