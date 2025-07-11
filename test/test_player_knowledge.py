@@ -107,6 +107,22 @@ class TestPlayerKnowledge(unittest.TestCase):
         with self.assertRaises(ValueError):
             self.knowledge.update_state(mock_result)
 
+    def test_previous_guesses(self):
+        """
+        Tests that the previous guesses are correctly returned
+        """
+        mock_results = [
+            MagicMock(guess="APPLE"),
+            MagicMock(guess="SASSY"),
+            MagicMock(guess="RAISE"),
+        ]
+        for result in mock_results:
+            self.knowledge.update_state(result)
+
+        self.assertEqual(
+            self.knowledge.previous_guesses(),
+            ["APPLE", "SASSY", "RAISE"]
+        )
 
 if __name__ == "__main__":
     unittest.main()

@@ -56,3 +56,6 @@ class PlayerKnowledge:
                 raise ValueError(f"Invalid letter state: {letter_obj}")
 
             seen.add(letter)
+
+    def previous_guesses(self) -> List[str]:
+        return [result.guess for result in self.history if result.guess]

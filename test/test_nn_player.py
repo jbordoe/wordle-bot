@@ -1,4 +1,5 @@
 import unittest
+from unittest.mock import MagicMock, patch
 
 from lib.game.dummy_wordle_game import DummyWordleGame
 from lib.player.nn_player import NNPlayer
@@ -26,6 +27,17 @@ class TestNNPlayer(unittest.TestCase):
         self.assertIsInstance(guess, str)
         self.assertEqual(len(guess), 5)
         self.assertIn(guess.upper(), self.test_wordlist)
+
+    @patch("lib.player.player_knowledge.PlayerKnowledge.update_state")
+    def test_update_state_delegates_to_knowledge(self, mock_update_state):
+        """
+        Test that the player's update_state method correctly delegates
+        the call to its PlayerKnowledge instance.
+        """
+        mock_result = MagicMock()
+        self.player.update_state(mock_result)
+        mock_update_state.assert_called_once_with(mock_result)
+
 
 if __name__ == '__main__':
     unittest.main()
