@@ -18,9 +18,10 @@ Designed to play Wordle and its variants, featuring multiple player types includ
     *   **Human Player**: Interactive command-line interface for manual play.
     *   **Statistical Bot**: An AI player that uses letter frequency analysis and statistical methods to make optimal guesses.
     *   **LLM Player**: Uses an LLM to generate intelligent guesses.
+    *   **Neural-Net Player**
 *   **In-Browser Automation**: Can simulate human interaction in a web browser.
 *   **Headless Browser Support**: Run browser-based games in the background.
-*   **Performance Evaluation**: Includes scripts to run extensive game simulations and generate performance statistics and visualizations for analysis.
+*   **Performance Evaluation**: Includes scripts to run extensive game simulations and generate performance statistics and visualization for analysis.
 
 ## Getting Started
 
