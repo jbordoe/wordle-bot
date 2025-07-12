@@ -1,12 +1,12 @@
 import argparse
 import logging
-import random
 import re
 import time
 
 from pyfiglet import Figlet
 from termcolor import colored, cprint
 
+from lib.display.wordle_result_themer import WordleResultThemer
 from lib.game.absurdle_game import AbsurdleGame
 from lib.game.dummy_wordle_game import DummyWordleGame
 from lib.game.wordle_game import WordleGame
@@ -17,36 +17,6 @@ from lib.player.nn_player import NNPlayer
 from lib.word_scorer.statistical_word_scorer import StatisticalWordScorer
 from lib.words.word_index import WordIndex
 from lib.words.word_loader import WordLoader
-
-THEMES = {
-    "default": {"absent": "⬛", "present": "🟨", "placed": "🟩", "dark": True},
-    "animals": {"absent": "🐁", "present": "🐤", "placed": "🐸", "dark": False},
-    "hearts": {"absent": "🖤", "present": "💛", "placed": "💚", "dark": True},
-    "circles": {"absent": "⚫️", "present": "🟡", "placed": "🟢", "dark": True},
-    "clothes": {"absent": "🎩", "present": "🩳", "placed": "🩲", "dark": True},
-    "food": {"absent": "🥚", "present": "🍋", "placed": "🍏", "dark": False},
-    "emoji": {"absent": "☹️", "present": "😐", "placed": "🙂", "dark": False},
-    "smile": {"absent": "😐", "present": "🙂", "placed": "😃", "dark": False},
-    "tree": {"absent": "🌱", "present": "🌿", "placed": "🌳", "dark": False},
-    "bird": {"absent": "🥚", "present": "🐣", "placed": "🐓", "dark": False},
-    "medals": {"absent": "🥉", "present": "🥈", "placed": "🥇", "dark": False},
-    "moon1": {"absent": "🌑", "present": "🌗", "placed": "🌕", "dark": False},
-    "moon2": {"absent": "🌚", "present": "🌜", "placed": "🌝", "dark": False},
-    "weather": {"absent": "⛈", "present": "🌥", "placed": "🌞", "dark": False},
-    "foodmix": {
-        "absent": "🥚🦴🍚🥛🎂",
-        "present": "🧀🍌🍋🥐",
-        "placed": "🥬🥦🥒🥝🍏",
-        "dark": False,
-    },
-    "misc": {
-        "absent": "🌚💣🏴🎮🎱🔌📞",
-        "present": "🍯🎷🛵🚜🔑🧽🛎📒🙃🦶",
-        "placed": "🤢🍀🥝🪀🔋🦠📗✅🔫",
-        "dark": True,
-    },
-}
-VALID_THEMES = list(THEMES.keys()) + ["random", "shuffle"]
 
 
 def init_player(state, player_type, model_path=None):
@@ -67,32 +37,6 @@ def init_player(state, player_type, model_path=None):
         return NNPlayer(state, words=word_index)
     else:
         raise Exception(f"Invalid player type: {player_type}")
-
-
-def map_result(result, theme):
-    if theme == "random":
-        theme = random.choice(list(THEMES.keys()))
-    if theme in [None, "default"]:
-        return result
-
-    if theme == "shuffle":
-        dark = random.choice([True, False])
-        tmap = {}
-        for key in ["absent", "present", "placed"]:
-            tmap[THEMES["default"][key]] = "".join(
-                [THEMES[t][key] for t in THEMES if THEMES[t]["dark"] == dark]
-            )
-
-        tmap["⬜"] = tmap.get("⬛")
-        result = [random.choice(tmap[c]) if c in tmap else c for c in result]
-        result = "".join(result)
-    else:
-        for key in ["absent", "present", "placed"]:
-            new = random.choice(THEMES[theme][key])
-            if key == "absent":
-                result = result.replace("⬜", new)
-            result = result.replace(THEMES["default"][key], new)
-    return result
 
 
 def console_game(player_type, wordlen=5, initial_guesses=[], theme="default"):
@@ -165,7 +109,7 @@ def browser_game(
                 n_guesses += 1
                 if result.correct:
                     logging.info("Solution found!")
-                    print(map_result(result.text, theme))
+                    print(WordleResultThemer.map_result(result.text, theme))
                     if not headless:
                         logging.info("Closing browser in 30 seconds")
                         time.sleep(30)
@@ -234,7 +178,7 @@ def main():
         required=False,
         default="default",
         help=f"""Theme for progress output (only for bot/llm players).
-            (Options: {','.join(VALID_THEMES)})"""
+            (Options: {','.join(WordleResultThemer.VALID_THEMES)})"""
     )
 
     args = parser.parse_args()
@@ -248,7 +192,7 @@ def main():
     if args.variant not in ("wordle", "absurdle"):
         raise Exception(f"Invalid variant: {args.variant}")
 
-    if args.theme not in VALID_THEMES:
+    if not WordleResultThemer.theme_valid(args.theme):
         raise Exception(f"Invalid theme: {args.theme}")
 
     initial_guesses = []
